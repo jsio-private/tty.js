@@ -9,5 +9,4 @@ s3cmd -c .s3cfg sync --recursive static/ s3://$BUCKET/$PATH_PREFIX/$VERSION/
 URL="https://d3uybqv7a64u59.cloudfront.net/$PATH_PREFIX/$VERSION"
 echo "CDN URL $URL"
 
-mkdir -p $HOME/.tty.js
-echo "{ \"cdn\" : \"$URL\" }" > $HOME/.tty.js/config.json
+echo "{ \"cdn\" : \"$URL\" }" > config.json
