@@ -107,9 +107,6 @@ body {
   background: transparent;
 }
 
-.grip:hover {
-}
-
 .terminal {
   border: #000 solid 5px;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
@@ -126,58 +123,21 @@ body {
 /**
  * Page
  */
-
-h1 {
+a {
   font: 20px/1.5 sans-serif;
-  background: #333;
-  margin: -25px -25px 0 -25px;
-  height: 30px;
-  padding: 10px 25px;
-  color: white;
-  border-top: #e15729 solid 10px;
-}
-
-#open, #lights {
-  font: 20px/1.5 sans-serif;
-  position: fixed;
-  right: 0;
-  padding: 10px;
-  height: 50px;
   color: white;
   cursor: pointer;
-  margin: 0;
   background: none;
   border: none;
   -webkit-appearance: none;
+  text-decoration: none ;
 }
 
-#open {
-  top: 10px;
-  background: #333;
+li {
+    list-style: none;
 }
 
-#lights {
-  font-size: 18px;
-  height: 46px;
-  top: 60px;
-  background: #555;
-}
 
-#open:hover, #lights:hover {
-  color: slategrey;
-  background: white;
-}
-
-#open:active, #lights:active {
+a:active, a:hover {
   color: orange;
 }
-
-#help {
-  font: 12px/1.5 sans-serif;
-  color: #999;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-}
-
-h1, #help { display: none; }

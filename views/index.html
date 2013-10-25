@@ -1,8 +1,16 @@
 <!doctype html>
-<title>tty.js</title>
-<link rel="stylesheet" href="{{static_url}}/style.css">
+<head>
+    <title>tty.js</title>
+    <link rel="stylesheet" href="{{static_url}}/style.css">
+</head>
 
-<h1>View Of tty.js</h1>
+<body>
+<h1>
+    <ul>
+       <li><a  href="//beta.wakari.io"> Back to Wakari</a></li>
+       <li><a  href="{{url_prefix}}"> Open a terminal </a></li>
+    </ul>
+</h1>
 
 <script type="application/javascript">
     window.io_resource = "{{ url_prefix }}/socket.io";
@@ -13,3 +21,5 @@
 <script src="{{static_url}}/term.js"></script>
 <script src="{{static_url}}/options.js"></script>
 <script src="{{static_url}}/tty.js"></script>
+
+</body>
