@@ -7,7 +7,6 @@
 <body>
 <h1>
     <ul>
-       <li><a  href="//beta.wakari.io"> Back to Wakari</a></li>
        <li><a  href="{{url_prefix}}"> Open a terminal </a></li>
     </ul>
 </h1>
@@ -16,7 +15,7 @@
     window.io_resource = "{{ url_prefix }}/socket.io";
 </script>
 
-<script src="//wakari-static.s3.amazonaws.com/latest/application.js"></script>
+<script src="{{wakari_cdn}}/application.js"></script>
 <script src="{{ url_prefix }}/socket.io/socket.io.js"></script>
 <script src="{{static_url}}/term.js"></script>
 <script src="{{static_url}}/options.js"></script>
