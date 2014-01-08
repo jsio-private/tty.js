@@ -1,0 +1,21 @@
+package:
+  name: tty.js 
+  version: 1.0 
+
+source:
+  git_url: git@github.com:ContinuumIO/tty.js.git
+
+build:            # (optional)
+  number: 1
+
+requirements:
+  build:
+    - python
+    - nodejs
+  run:
+    - python
+    - nodejs
+
+about:
+  home: https://github.com/ContinuumIO/tty.js
+  license: MIT 
