@@ -12,3 +12,7 @@ then
     cp $RECIPE_DIR/post-link.sh $POST_LINK
     chmod +x $POST_LINK
 fi
+
+mkdir -p $PREFIX/etc/wakari/apps
+cp $SRC_DIR/terminal.json $PREFIX/etc/wakari/apps/terminal.json
+
