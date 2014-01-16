@@ -10,6 +10,7 @@ pushd $PREFIX
 mv lib/node_modules/tty.js/bin/tty.js lib/node_modules/tty.js/bin/tty.js.old
 echo "#!${PREFIX}/bin/node" >  lib/node_modules/tty.js/bin/tty.js
 tail -n +2 lib/node_modules/tty.js/bin/tty.js.old >> lib/node_modules/tty.js/bin/tty.js
+chmod +x lib/node_modules/tty.js/bin/tty.js
 popd
 
 
