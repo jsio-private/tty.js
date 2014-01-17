@@ -1,6 +1,6 @@
 {
     "name":"terminal", 
     "title": "Terminal App",
-    "command_list": ["export PATH=${PREFIX}/bin:${PATH}; alias conda=/opt/anaconda/bin/conda; ${PREFIX}/bin/tty.js", "--url_prefix=%(urlPrefix)s", "--cwd=%(projectHome)s", "--port=%(port)s"]
+    "command_list": ["export PATH=POST_INSTALL_ENV_PLACEHOLDER/bin:${PATH}; alias conda=/opt/anaconda/bin/conda; POST_INSTALL_ENV_PLACEHOLDER/bin/tty.js", "--url_prefix=%(urlPrefix)s", "--cwd=%(projectHome)s", "--port=%(port)s"]
 }
 

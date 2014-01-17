@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# rename config file to template file
+# Replace POST_INSTALL_ENV_PLACEHOLDER -- store in config file
+# remove template file
 template() {
-    expr='{while(match($0,"[$]{[^}]*}")) {var=substr($0,RSTART+2,RLENGTH -3);gsub("[$]{"var"}",ENVIRON[var])}}1'
-
-    awk "$expr" < $1 > $2
+    template=${1}.template
+    mv $1 $template
+    
+    # use '#' as delimiter becuase $PREFIX has slashes
+    sed -e "s#POST_INSTALL_ENV_PLACEHOLDER#${PREFIX}#g" < ${template} > $1
+    rm $template
 }
 
-template $PREFIX/etc/wakari/apps/terminal.json.template $PREFIX/etc/wakari/apps/terminal.json
-rm $PREFIX/etc/wakari/apps/terminal.json.template
+template $PREFIX/etc/wakari/apps/terminal.json
