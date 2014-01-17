@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ ${SYS_PREFIX} == "" ]]
+then
+    SYS_PREFIX=(dirname `which conda`)
+fi
+
 # rename config file to template file
 # Replace POST_INSTALL_ENV_PLACEHOLDER -- store in config file
 # remove template file
