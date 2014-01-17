@@ -3,7 +3,7 @@
 if [[ ${SYS_PREFIX} == "" ]]
 then
     conda=`which conda`
-    SYS_PREFIX=x=$(dirname $(dirname `which conda`))
+    SYS_PREFIX=$(dirname $(dirname `which conda`))
 fi
 
 # rename config file to template file
