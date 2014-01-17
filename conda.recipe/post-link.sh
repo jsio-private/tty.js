@@ -8,7 +8,7 @@ template() {
     mv $1 $template
     
     # use '#' as delimiter becuase $PREFIX has slashes
-    sed -e "s#POST_INSTALL_ENV_PLACEHOLDER#${PREFIX}#g" < ${template} > $1
+    sed -e "s#POST_INSTALL_ENV_PLACEHOLDER#${PREFIX}#g" -e "s#POST_INSTALL_ROOT_ENV_PLACEHOLDER#${SYS_PREFIX}#g" < ${template} > $1
     rm $template
 }
 
