@@ -3,6 +3,12 @@
 A terminal in your browser using node.js and socket.io. Based on Fabrice
 Bellard's vt100 for [jslinux](http://bellard.org/jslinux/).
 
+For the standalone web terminal, see
+[**term.js**](https://github.com/chjj/term.js).
+
+For the lowlevel terminal spawner, see
+[**pty.js**](https://github.com/chjj/pty.js).
+
 ## Screenshots
 
 ### irssi
@@ -156,6 +162,12 @@ The distance to go before full xterm compatibility.
 - Miscellaneous sequences: cursor shape, window title
 - Origin Mode, Insert Mode
 - Proper Tab Setting
+
+### Contribution and License Agreement
+
+If you contribute code to this project, you are implicitly allowing your code
+to be distributed under the MIT license. You are also implicitly verifying that
+all code is your original work. `</legalese>`
 
 ## License
 
