@@ -82,9 +82,7 @@ tty.open = function() {
     tty.emit('connect');
     w = new Window;
     // hack.. for some reason something else is sizing the window wrong... 
-    setTimeout(function() {
-        w.maximize();
-    }, 200);
+    w.maximize();
   });
 
   tty.socket.on('data', function(id, data) {
@@ -491,6 +489,17 @@ Window.prototype.each = function(func) {
 };
 
 Window.prototype.createTab = function() {
+  setTimeout(function() {
+    var i = tty.windows.length
+    , win;
+    while (i--) {
+      win = tty.windows[i];
+      if (win.minimize) {
+        win.minimize();
+        win.maximize();
+      }
+    }
+  }, 200);
   return new Tab(this, this.socket);
 };
 
