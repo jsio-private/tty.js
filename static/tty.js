@@ -81,7 +81,10 @@ tty.open = function() {
     tty.reset();
     tty.emit('connect');
     w = new Window;
-    w.maximize()
+    // hack.. for some reason something else is sizing the window wrong... 
+    setTimeout(function() {
+        w.maximize();
+    }, 200);
   });
 
   tty.socket.on('data', function(id, data) {
