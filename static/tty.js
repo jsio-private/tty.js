@@ -50,7 +50,13 @@ tty.elements;
 /**
  * Open
  */
-
+tty.get_default_window = function(){
+  if (tty.windows.length > 0){
+    return tty.windows[0];
+  }else{
+    return new Window;
+  }
+}
 tty.open = function() {
   if (document.location.pathname) {
     var parts = document.location.pathname.split('/')
@@ -82,9 +88,9 @@ tty.open = function() {
   tty.socket.on('connect', function() {
     tty.reset();
     tty.emit('connect');
-    w = new Window;
-    // hack.. for some reason something else is sizing the window wrong... 
-    w.maximize();
+    // w = tty.get_default_window();
+    // // hack.. for some reason something else is sizing the window wrong... 
+    // w.maximize();
   });
 
   tty.socket.on('data', function(id, data) {
@@ -103,26 +109,35 @@ tty.open = function() {
     console.log(terms);
 
     tty.reset();
-
-    var emit = tty.socket.emit;
-    tty.socket.emit = function() {};
-
-    Object.keys(terms).forEach(function(key) {
-      var data = terms[key]
-        , win = new Window
-        , tab = win.tabs[0];
-
-      delete tty.terms[tab.id];
-      tab.pty = data.pty;
-      tab.id = data.id;
-      tty.terms[data.id] = tab;
-      win.resize(data.cols, data.rows);
-      tab.setProcessName(data.process);
-      tty.emit('open tab', tab);
-      tab.emit('open');
-    });
-
-    tty.socket.emit = emit;
+    if (Object.keys(terms).length == 0){
+      var win = tty.get_default_window();      
+    }else{
+      var emit = tty.socket.emit;
+      tty.socket.emit = function() {};
+      Object.keys(terms).forEach(function(key, index) {
+        // windows always have 1 terminal....
+        // this code is wierd... windows always make a term
+        // so I guess we patch some connection settings or something...
+        var win = tty.get_default_window();
+        var data = terms[key]
+        var tab;
+        if (index == 0){
+          tab = win.tabs[0];
+        }else{
+          tab = win.createTab();
+        }
+        delete tty.terms[tab.id];
+        tab.pty = data.pty;
+        tab.id = data.id;
+        tty.terms[data.id] = tab;
+        win.resize(data.cols, data.rows);
+        tab.setProcessName(data.process);
+        tty.emit('open tab', tab);
+        tab.emit('open');
+      });
+      tty.socket.emit = emit;
+    }
+    tty.get_default_window().maximize();
   });
 
   // We would need to poll the os on the serverside
