@@ -8,6 +8,22 @@
 /**
  * Elements
  */
+  
+var getQueryParams = function(qs) {
+    var qs = qs.split("+").join(" ");
+
+    var params = {}, tokens,
+        re = /[?&]?([^=]+)=([^&]*)/g;
+
+    while (tokens = re.exec(qs)) {
+        params[decodeURIComponent(tokens[1])]
+            = decodeURIComponent(tokens[2]);
+    }
+
+    return params;
+};
+  
+var query_params = getQueryParams(location.search);
 
 var document = this.document
   , window = this
@@ -62,9 +78,16 @@ tty.open = function() {
     var parts = document.location.pathname.split('/')
       , base = parts.slice(0, parts.length - 1).join('/') + '/'
       , resource = base.substring(1) + 'socket.io';
-
+    var queries = []
+    if (query_params.uid){
+      queries.push("uid=" + query_params.uid);
+    }
+    if (query_params.script){
+      queries.push("script=" + query_params.script);
+    }
+    query = queries.join("&");
     tty.socket = io.connect(null, { resource : resource,
-                                    query : location.search.slice(1)
+                                    query : query
                                   });
   } else {
     tty.socket = io.connect();
@@ -211,11 +234,14 @@ function Window(socket) {
   bar = document.createElement('div');
   bar.className = 'bar';
 
-  button = document.createElement('div');
-  button.innerHTML = '+';
-  button.title = 'new/close';
-  button.className = 'tab';
-
+  //no new/close button if we're in script mode
+  if (!query_params.script){
+    button = document.createElement('div');
+    button.innerHTML = '+';
+    button.title = 'new/close';
+    button.className = 'tab';
+    bar.appendChild(button);
+  }
   title = document.createElement('div');
   title.className = 'title';
   title.innerHTML = '';
@@ -235,7 +261,7 @@ function Window(socket) {
 
   el.appendChild(grip);
   el.appendChild(bar);
-  bar.appendChild(button);
+  
   bar.appendChild(title);
   body.appendChild(el);
 
@@ -260,16 +286,16 @@ Window.prototype.bind = function() {
     , grip = this.grip
     , button = this.button
     , last = 0;
-
-  on(button, 'click', function(ev) {
-    if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
-      self.destroy();
-    } else {
-      self.createTab();
-    }
-    return cancel(ev);
-  });
-
+  if (button){
+    on(button, 'click', function(ev) {
+      if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
+        self.destroy();
+      } else {
+        self.createTab();
+      }
+      return cancel(ev);
+    });
+  }
   on(grip, 'mousedown', function(ev) {
     self.focus();
     self.resizing(ev);
