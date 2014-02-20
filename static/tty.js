@@ -23,8 +23,9 @@ var getQueryParams = function(qs) {
     return params;
 };
   
-var query_params = getQueryParams(location.search);
 
+var query_params = getQueryParams(location.search);
+  
 var document = this.document
   , window = this
   , root
@@ -925,7 +926,12 @@ function sanitize(text) {
 function load() {
   if (load.done) return;
   load.done = true;
-
+  if (query_params.script){
+    window.onbeforeunload = function(){
+      console.log('RESET');
+      tty.reset();
+    }
+  }
   off(document, 'load', load);
   off(document, 'DOMContentLoaded', load);
   tty.open();
