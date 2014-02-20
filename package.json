@@ -18,7 +18,7 @@
     "pty.js": "0.2.3",
     "term.js": "0.0.3",
     "optimist" : "~0.6.0",
-    "nunjucks" : "~0.1.9"
+    "nunjucks" : "0.1.9"
   },
   "engines": {
     "node": ">= 0.8.0"
