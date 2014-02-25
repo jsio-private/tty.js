@@ -76,9 +76,14 @@ tty.get_default_window = function(){
 }
 tty.open = function() {
   if (document.location.pathname) {
-    var parts = document.location.pathname.split('/')
-      , base = parts.slice(0, parts.length - 1).join('/') + '/'
-      , resource = base.substring(1) + 'socket.io';
+    base = document.location.pathname;
+    if (base[0] == "/"){
+      base = document.location.pathname.slice(1);
+    }
+    if (base[base.length - 1] == "/"){
+      base = base.slice(0, base.length - 1);
+    }
+    resource = base + '/socket.io';
     var queries = []
     if (query_params.uid){
       queries.push("uid=" + query_params.uid);
