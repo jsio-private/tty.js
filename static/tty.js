@@ -83,7 +83,11 @@ tty.open = function() {
     if (base[base.length - 1] == "/"){
       base = base.slice(0, base.length - 1);
     }
-    resource = base + '/socket.io';
+    if (base){
+      resource = base + '/socket.io';
+    } else{
+      resource = 'socket.io';
+    }
     var queries = []
     if (query_params.uid){
       queries.push("uid=" + query_params.uid);
