@@ -6,16 +6,18 @@ source:
   git_url: git@github.com:ContinuumIO/tty.js.git
 
 build:            # (optional)
-  number: 1
+  number: 1 
 
 requirements:
   build:
-    - python
+    - python   # needed for node-gyp
     - nodejs
   run:
-    - python
     - nodejs
 
+test:
+    requires:
+        - python
 about:
   home: https://github.com/ContinuumIO/tty.js
   license: MIT 
