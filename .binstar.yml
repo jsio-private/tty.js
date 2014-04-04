@@ -1,0 +1,12 @@
+package: wk-ttyjs
+user: wakari
+
+script:
+  - conda build conda.recipe
+
+build_targets: conda
+
+notifications:
+  email: 
+    recipients: bkreider@continuum.io
+
