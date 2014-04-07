@@ -2,6 +2,7 @@ package: wk-ttyjs
 user: wakari
 
 install:
+    - sudo yum install -q gcc gcc-c++
     - conda config --add channels https://conda.binstar.org/wakari
 
 script:
