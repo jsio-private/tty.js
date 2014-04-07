@@ -2,7 +2,7 @@ package: wk-ttyjs
 user: wakari
 
 install:
-    - conda config --system --add channels https://conda.binstar.org/wakari
+    - conda config --add channels https://conda.binstar.org/wakari
 
 script:
   - conda build conda.recipe
