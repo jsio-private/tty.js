@@ -1,9 +1,11 @@
-package: wk-ttyjs
+package: tty.js
 user: wakari
 
 install:
+    - sudo yum erase -q gcc gcc-c++
     - sudo yum install -q gcc gcc-c++
-    - conda config --add channels https://conda.binstar.org/wakari
+    - conda config  --add channels https://conda.binstar.org/wakari
+    - conda info
 
 script:
   - conda build conda.recipe
@@ -13,5 +15,3 @@ build_targets: conda
 notifications:
   email: 
     recipients: bkreider@continuum.io
-
-

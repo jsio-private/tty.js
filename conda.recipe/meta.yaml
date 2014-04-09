@@ -3,7 +3,7 @@ package:
   version: 1.0 
 
 build:            # (optional)
-  number: 1 
+  number: {{environ.get('BINSTAR_BUILD', 1)}}
 
 requirements:
   build:
