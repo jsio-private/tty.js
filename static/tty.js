@@ -8,7 +8,7 @@
 /**
  * Elements
  */
-  
+
 var getQueryParams = function(qs) {
     var qs = qs.split("+").join(" ");
 
@@ -22,10 +22,10 @@ var getQueryParams = function(qs) {
 
     return params;
 };
-  
+
 
 var query_params = getQueryParams(location.search);
-  
+
 var document = this.document
   , window = this
   , root
@@ -122,7 +122,7 @@ tty.open = function() {
     tty.reset();
     tty.emit('connect');
     // w = tty.get_default_window();
-    // // hack.. for some reason something else is sizing the window wrong... 
+    // // hack.. for some reason something else is sizing the window wrong...
     // w.maximize();
   });
 
@@ -143,7 +143,7 @@ tty.open = function() {
 
     tty.reset();
     if (Object.keys(terms).length == 0){
-      var win = tty.get_default_window();      
+      var win = tty.get_default_window();
     }else{
       var emit = tty.socket.emit;
       tty.socket.emit = function() {};
@@ -193,10 +193,7 @@ tty.open = function() {
 
     while (i--) {
       win = tty.windows[i];
-      if (win.minimize) {
-        win.minimize();
-        win.maximize();
-      }
+      win.maximize();
     }
   });
 
@@ -249,19 +246,16 @@ function Window(socket) {
     button = document.createElement('div');
     button.innerHTML = '+';
     button.title = 'new/close';
-    button.className = 'tab';
+    button.className = 'tab plusBtn';
     bar.appendChild(button);
+    bar.newButton = button;
   }
-  title = document.createElement('div');
-  title.className = 'title';
-  title.innerHTML = '';
 
   this.socket = socket || tty.socket;
   this.element = el;
   this.grip = grip;
   this.bar = bar;
   this.button = button;
-  this.title = title;
 
   this.tabs = [];
   this.focused = null;
@@ -271,8 +265,7 @@ function Window(socket) {
 
   el.appendChild(grip);
   el.appendChild(bar);
-  
-  bar.appendChild(title);
+
   body.appendChild(el);
 
   tty.windows.push(this);
@@ -439,10 +432,9 @@ Window.prototype.resizing = function(ev) {
   function up() {
     var x, y;
 
-    x = el.clientWidth / resize.w;
-    y = el.clientHeight / resize.h;
-    x = (x * term.cols) | 0;
-    y = (y * term.rows) | 0;
+    var charSize = term.measureCharacter();
+    x = el.clientWidth / charSize.width | 0;
+    y = el.clientHeight / charSize.height | 0;
 
     self.resize(x, y);
 
@@ -480,31 +472,25 @@ Window.prototype.maximize = function() {
     root: root.className
   };
 
-  this.minimize = function() {
-    delete this.minimize;
+  // this.minimize = function() {
+  //   delete this.minimize;
 
-    el.style.left = m.left + 'px';
-    el.style.top = m.top + 'px';
-    el.style.width = '';
-    el.style.height = '';
-    term.element.style.width = '';
-    term.element.style.height = '';
-    el.style.boxSizing = '';
-    self.grip.style.display = '';
-    root.className = m.root;
+  //   el.style.left = m.left + 'px';
+  //   el.style.top = m.top + 'px';
+  //   el.style.width = '';
+  //   el.style.height = '';
+  //   term.element.style.width = '';
+  //   term.element.style.height = '';
+  //   el.style.boxSizing = '';
+  //   self.grip.style.display = '';
+  //   root.className = m.root;
 
-    tty.emit('minimize window', self);
-    self.emit('minimize');
-    self.resize(m.cols, m.rows);
-
-  };
+  //   tty.emit('minimize window', self);
+  //   self.emit('minimize');
+  //   self.resize(m.cols, m.rows);
+  // };
 
   window.scrollTo(0, 0);
-
-  x = root.clientWidth / term.element.offsetWidth;
-  y = root.clientHeight / term.element.offsetHeight;
-  x = (x * term.cols) | 0;
-  y = (y * term.rows) | 0;
 
   el.style.left = '0px';
   el.style.top = '0px';
@@ -515,6 +501,10 @@ Window.prototype.maximize = function() {
   el.style.boxSizing = 'border-box';
   this.grip.style.display = 'none';
   root.className = 'maximized';
+
+  var charSize = term.measureCharacter();
+  x = (term.element.offsetWidth - 5) / charSize.width | 0;
+  y = (term.element.offsetHeight - 5) / charSize.height | 0;
 
   this.resize(x, y);
 
@@ -547,10 +537,7 @@ Window.prototype.createTab = function() {
     , win;
     while (i--) {
       win = tty.windows[i];
-      if (win.minimize) {
-        win.minimize();
-        win.maximize();
-      }
+      win.maximize();
     }
   }, 200);
   return new Tab(this, this.socket);
@@ -610,7 +597,7 @@ function Tab(win, socket) {
   var button = document.createElement('div');
   button.className = 'tab';
   button.innerHTML = num_tabs;
-  win.bar.appendChild(button);
+  win.bar.insertBefore(button, win.bar.newButton);
 
   on(button, 'click', function(ev) {
     if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
@@ -661,19 +648,20 @@ Tab.prototype.handleTitle = function(title) {
 
   if (Terminal.focus === this) {
     document.title = title;
-    // if (h1) h1.innerHTML = title;
   }
 
   if (this.window.focused === this) {
     this.window.bar.title = title;
-    // this.setProcessName(this.process);
   }
 };
 
 Tab.prototype._write = Tab.prototype.write;
 
 Tab.prototype.write = function(data) {
-  if (this.window.focused !== this) this.button.style.color = 'red';
+  if (this.window.focused !== this && !/alert/.test(this.button.className)) {
+    this.button.className += ' alert';
+  }
+
   return this._write(data);
 };
 
@@ -681,6 +669,10 @@ Tab.prototype._focus = Tab.prototype.focus;
 
 Tab.prototype.focus = function() {
   if (Terminal.focus === this) return;
+
+  if (/alert/.test(this.button.className)) {
+    this.button.className = this.button.className.replace('alert', '');
+  }
 
   var win = this.window;
 
@@ -696,7 +688,6 @@ Tab.prototype.focus = function() {
     win.element.appendChild(this.element);
     win.focused = this;
 
-    win.title.innerHTML = this.process;
     document.title = this.title || initialTitle;
     this.button.className = 'tab selected';
   }
@@ -743,11 +734,6 @@ Tab.prototype._destroy = function() {
   if (!win.tabs.length) {
     win.destroy();
   }
-
-  // if (!tty.windows.length) {
-  //   document.title = initialTitle;
-  //   if (h1) h1.innerHTML = initialTitle;
-  // }
 
   this.__destroy();
 };
@@ -895,15 +881,11 @@ Tab.prototype.setProcessName = function(name) {
     this.emit('process', name);
   }
 
+  if (!name) { name = 'terminal'; }
+
   this.process = name;
   this.button.title = name;
-
-  if (this.window.focused === this) {
-    // if (this.title) {
-    //   name += ' (' + this.title + ')';
-    // }
-    this.window.title.innerHTML = name;
-  }
+  this.button.innerText = name;
 };
 
 /**
