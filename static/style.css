@@ -35,7 +35,7 @@ body {
  */
 
 .window {
-  padding-top: 15px;
+  padding-top: 22px;
   border: #fafafa solid 1px;
   background: #272829;
   position: absolute;
@@ -59,10 +59,13 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 13px;
-  padding: 1px 0;
+  height: 22px;
+  overflow: hidden;
+  padding: 0;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
-  color: #fafafa;
+  color: #444;
+  background-color: #eaeae6;
+  border-top: 1px solid #CCC;
 }
 
 .bar,
@@ -84,17 +87,92 @@ body {
   float: left;
   cursor: pointer;
   padding: 0px 3px 0px 3px;
-}
 
-.tab.selected {
-  color: #8ae234;
-  font-weight: bold;
 }
 
 .tab:hover {
   cursor: pointer;
-  font-weight: bold;
 }
+
+.tab {
+    border: 1px solid #AAA;
+    background: #D1D1D1;
+    background: -o-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    background: -ms-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    background: -moz-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    background: -webkit-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    background: linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    display: inline-block;
+    position: relative;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25), inset 0 1px 0 #FFF;
+    margin: 0 -4px;
+    min-width: 50px;
+    z-index: 1;
+    padding: 4px 15px 1px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.tab.plusBtn {
+  min-width: inherit;
+  text-align: right;
+  padding-right: 15px;
+  padding-left: 15px;
+  left: 7px;
+  z-index: 0;
+}
+
+.tab.alert {
+  color: red;
+}
+
+.tab.selected {
+    background: #000;
+    color: #FFF;
+    z-index: 3;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25);
+    border-bottom-color: #000;
+}
+.bar:before {
+    position: absolute;
+    content: " ";
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid #AAA;
+    z-index: 2;
+}
+.tab:before,
+.tab:after {
+    border: 1px solid #AAA;
+    position: absolute;
+    bottom: -1px;
+    width: 5px;
+    height: 5px;
+    content: " ";
+}
+.tab:before {
+    left: -6px;
+    border-bottom-right-radius: 6px;
+    border-width: 0 1px 1px 0;
+    box-shadow: 2px 2px 0 #D1D1D1;
+}
+.tab:after {
+    right: -6px;
+    border-bottom-left-radius: 6px;
+    border-width: 0 0 1px 1px;
+    box-shadow: -2px 2px 0 #D1D1D1;
+}
+.tab.selected:before {
+    box-shadow: 2px 2px 0 #000;
+}
+.tab.selected:after {
+    box-shadow: -2px 2px 0 #000;
+}
+
+
 
 .grip {
   position: absolute;
@@ -112,6 +190,11 @@ body {
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
   font-size: 13px;
   color: #f0f0f0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
   background: #000;
 }
 

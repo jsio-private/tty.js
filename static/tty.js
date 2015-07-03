@@ -361,7 +361,8 @@ Window.prototype.drag = function(ev) {
   var self = this
     , el = this.element;
 
-  if (this.minimize) return;
+  // if (this.minimize) return;
+  return;
 
   var drag = {
     left: el.offsetLeft,
