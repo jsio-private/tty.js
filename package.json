@@ -2,7 +2,8 @@
   "name": "tty.js",
   "description": "A terminal for your browser",
   "author": "Christopher Jeffrey",
-  "version": "0.2.13",
+  "version": "0.2.15",
+  "license": "MIT",
   "main": "./index.js",
   "bin": "./bin/tty.js",
   "man": "./man/tty.js.1",
@@ -15,7 +16,7 @@
   "dependencies": {
     "express": "3.4.4",
     "socket.io": "0.9.16",
-    "pty.js": "0.2.3",
+    "pty.js": ">= 0.2.13",
     "term.js": "git://github.com/weebygames/term.js",
     "optimist" : "~0.6.0",
     "nunjucks" : "0.1.9"
