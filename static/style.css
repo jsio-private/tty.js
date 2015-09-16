@@ -5,7 +5,7 @@
 
 html, body {
   margin: 0;
-  background: #333;
+  background: #1c232c;
   padding: 0;
 }
 
@@ -37,7 +37,7 @@ body {
 .window {
   padding-top: 22px;
   border: #fafafa solid 1px;
-  background: #272829;
+  background: #1c232c;
   position: absolute;
   top: 20px;
   left: 20px;
@@ -64,8 +64,13 @@ body {
   padding: 0;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
   color: #444;
-  background-color: #eaeae6;
-  border-top: 1px solid #CCC;
+  background-color: #404f61;
+  border-top: 1px solid #656f7a;
+
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .bar,
@@ -95,24 +100,16 @@ body {
 }
 
 .tab {
-    border: 1px solid #AAA;
-    background: #D1D1D1;
-    background: -o-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
-    background: -ms-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
-    background: -moz-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
-    background: -webkit-linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
-    background: linear-gradient(top, #ECECEC 50%, #D1D1D1 100%);
+    background: #73869E;
     display: inline-block;
     position: relative;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25), inset 0 1px 0 #FFF;
     margin: 0 -4px;
     min-width: 50px;
-    z-index: 1;
-    padding: 4px 15px 1px;
+    z-index: 2;
+    padding: 4px 15px 4px;
     text-align: center;
     font-size: 13px;
+    color: #C7C7C7;
 }
 
 .tab.plusBtn {
@@ -121,7 +118,7 @@ body {
   padding-right: 15px;
   padding-left: 15px;
   left: 7px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .tab.alert {
@@ -129,11 +126,11 @@ body {
 }
 
 .tab.selected {
-    background: #000;
+    background: #1c232c;
     color: #FFF;
     z-index: 3;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.25);
-    border-bottom-color: #000;
+    box-shadow: 0px 3px 6px 2px rgba(0, 0, 0, 0.3);
+    border-bottom-color: #1c232c;
 }
 .bar:before {
     position: absolute;
@@ -141,37 +138,8 @@ body {
     width: 100%;
     bottom: 0;
     left: 0;
-    border-bottom: 1px solid #AAA;
     z-index: 2;
 }
-.tab:before,
-.tab:after {
-    border: 1px solid #AAA;
-    position: absolute;
-    bottom: -1px;
-    width: 5px;
-    height: 5px;
-    content: " ";
-}
-.tab:before {
-    left: -6px;
-    border-bottom-right-radius: 6px;
-    border-width: 0 1px 1px 0;
-    box-shadow: 2px 2px 0 #D1D1D1;
-}
-.tab:after {
-    right: -6px;
-    border-bottom-left-radius: 6px;
-    border-width: 0 0 1px 1px;
-    box-shadow: -2px 2px 0 #D1D1D1;
-}
-.tab.selected:before {
-    box-shadow: 2px 2px 0 #000;
-}
-.tab.selected:after {
-    box-shadow: -2px 2px 0 #000;
-}
-
 
 
 .grip {
@@ -186,7 +154,7 @@ body {
 }
 
 .terminal {
-  border: #000 solid 5px;
+  padding: 5px;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
   font-size: 13px;
   color: #f0f0f0;
@@ -195,7 +163,9 @@ body {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
   -o-box-sizing: border-box;
-  background: #000;
+  background: #1c232c;
+  top: 1px;
+  position: relative;
 }
 
 .reverse-video {
