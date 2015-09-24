@@ -62,7 +62,7 @@ body {
   height: 22px;
   overflow: hidden;
   padding: 0;
-  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-family: "Monaco", "DejaVu Sans Mono", "Liberation Mono", monospace;
   color: #444;
   background-color: #404f61;
   border-top: 1px solid #656f7a;
@@ -155,8 +155,11 @@ body {
 
 .terminal {
   padding: 5px;
-  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
-  font-size: 13px;
+  font-family: "Monaco", "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: #f0f0f0;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -165,6 +168,7 @@ body {
   -o-box-sizing: border-box;
   background: #1c232c;
   top: 1px;
+  white-space: nowrap;
   position: relative;
 }
 
