@@ -823,6 +823,10 @@ Tab.prototype._ignoreNext = function() {
   };
 };
 
+Tab.prototype.stopBlink = function() {
+  clearInterval(this._blink);
+};
+
 /**
  * Program-specific Features
  */
@@ -841,6 +845,7 @@ Tab.scrollable = {
 Tab.prototype._bindMouse = Tab.prototype.bindMouse;
 
 Tab.prototype.bindMouse = function() {
+  this.bindMouseSelection();
   if (!Terminal.programFeatures) return this._bindMouse();
 
   var self = this;
@@ -866,6 +871,22 @@ Tab.prototype.bindMouse = function() {
   });
 
   return this._bindMouse();
+};
+
+Tab.prototype.bindMouseSelection = function () {
+  var self = this;
+
+  on(self.element, 'mousedown', function() {
+    self.stopBlink();
+  });
+
+  on(self.element, 'mouseup', function() {
+    var selection = getSelectionText();
+
+    if (!selection) {
+      self.refreshBlink();
+    }
+  });
 };
 
 Tab.prototype.pollProcessName = function(func) {
@@ -911,6 +932,16 @@ function splice(obj, el) {
 function sanitize(text) {
   if (!text) return '';
   return (text + '').replace(/[&<>]/g, '')
+}
+
+function getSelectionText() {
+  var text = "";
+  if (window.getSelection) {
+    text = window.getSelection().toString();
+  } else if (document.selection && document.selection.type != "Control") {
+    text = document.selection.createRange().text;
+  }
+  return text;
 }
 
 /**
