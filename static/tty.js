@@ -504,7 +504,9 @@ Window.prototype.maximize = function() {
   root.className = 'maximized';
 
   var charSize = term.measureCharacter();
-  x = (term.element.offsetWidth - 5) / charSize.width | 0;
+  var fontSize = parseFloat(window.getComputedStyle(term.element, null).getPropertyValue('font-size')); // get terminal font size
+  var widthScaleCoefficient = 1.63; // empirically identified
+  x = term.element.offsetWidth * widthScaleCoefficient / fontSize | 0;
   y = (term.element.offsetHeight - 5) / charSize.height | 0;
 
   this.resize(x, y);
