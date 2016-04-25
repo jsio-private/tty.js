@@ -79,6 +79,7 @@
 
       container.on('show', function () {
         setTimeout(tty.maximizeWindows, 200);
+        win.focus();
       });
       container.on('resize', function () {
         setTimeout(tty.maximizeWindows, 200);
