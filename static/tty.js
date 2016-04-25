@@ -593,6 +593,30 @@ Window.prototype.previousTab = function() {
   return this.focusTab(false);
 };
 
+Window.prototype.restoreTab = function(data) {
+  // this code is copied from tty.open method
+  // TODO clean this code
+  var win = this;
+  var emit = tty.socket.emit;
+  tty.socket.emit = function() {};
+  var tab = win.tabs[0];
+  delete tty.terms[tab.id];
+  tab.pty = data.pty;
+  tab.id = data.term_id;
+  tty.terms[data.term_id] = tab;
+  this.resize(data.cols, data.rows);
+  tab.setProcessName(data.process);
+  tty.emit('open tab', tab);
+  tab.emit('open');
+
+  // this part is added, previously it was called from lib/tty.js
+  setTimeout(function() {
+    win.resize(data.cols, data.rows);
+  }, 300);
+
+  tty.socket.emit = emit;
+};
+
 /**
  * Tab
  */

@@ -1,33 +1,17 @@
 ;(function() {
-  var defaultConfig = {
-    content: [{
-      type: 'stack',
-      content: [{
-        type: 'row',
-        title: 'bash',
-        content:[{
-          type: 'component',
-          componentName: 'bash'
-        },{
-          type: 'column',
-          content:[{
-            type: 'component',
-            componentName: 'bash'
-          },{
-            type: 'component',
-            componentName: 'bash'
-          }]
-        }]
-      },
-        {
-          type: 'component',
-          title: 'bash',
-          componentName: 'bash'
-        }]
-    }]
-  };
-
   var ConfigProvider = {
+    getDefaultConfig: function () {
+      return {
+        content: [{
+          type: 'stack',
+          content: [{
+              type: 'component',
+              title: 'bash',
+              componentName: 'bash'
+            }]
+        }]
+      };
+    },
     getBlankPaneConfig: function () {
       return {
         type: 'component',
@@ -49,10 +33,14 @@
     }
   };
 
-  var Layout = function (terms, tty) {
+  var Layout = function (state, tty) {
     var self = this;
 
-    self.layout = new GoldenLayout(defaultConfig);
+    if(state) {
+      self.layout = new GoldenLayout(JSON.parse(state));
+    } else {
+      self.layout = new GoldenLayout(ConfigProvider.getDefaultConfig());
+    }
 
     self.tty = tty;
   };
@@ -61,10 +49,7 @@
     var self = this;
 
     this.layout.on('stateChanged', function(){
-      var state = JSON.stringify(self.layout.toConfig());
-
-      //console.log(state)
-      //TODO save state in session
+      self.tty.socket.emit('layout state change', JSON.stringify(self.layout.toConfig()));
     });
   };
 
@@ -73,6 +58,22 @@
 
     this.layout.registerComponent('bash', function(container, componentState){
       var win = new tty.Window;
+
+      win.on('open', function () {
+        var tab = win.tabs[0];
+
+        if ('term_id' in componentState) {
+          win.restoreTab(componentState);
+        } else {
+          container.setState({
+            'pty': tab.pty,
+            'term_id': tab.id,
+            'rows': win.rows,
+            'cols': win.cols,
+            'process': tab.process
+          });
+        }
+      });
 
       container.getElement().get(0).appendChild(win.element);
 
@@ -195,9 +196,9 @@
   };
 
   tty.on('load', function () {
-    tty.socket.on('sync', function(terms) {
+    tty.socket.on('sync', function(state) {
       tty.reset();
-      var layout = new Layout(terms, tty);
+      var layout = new Layout(state, tty);
       tty.maximizeWindows();
       layout.init();
     });
