@@ -137,41 +137,41 @@ tty.open = function() {
   });
 
   // XXX Clean this up.
-  tty.socket.on('sync', function(terms) {
-    console.log('Attempting to sync...');
-    console.log(terms);
-
-    tty.reset();
-    if (Object.keys(terms).length == 0){
-      var win = tty.get_default_window();
-    }else{
-      var emit = tty.socket.emit;
-      tty.socket.emit = function() {};
-      Object.keys(terms).forEach(function(key, index) {
-        // windows always have 1 terminal....
-        // this code is wierd... windows always make a term
-        // so I guess we patch some connection settings or something...
-        var win = tty.get_default_window();
-        var data = terms[key]
-        var tab;
-        if (index == 0){
-          tab = win.tabs[0];
-        }else{
-          tab = win.createTab();
-        }
-        delete tty.terms[tab.id];
-        tab.pty = data.pty;
-        tab.id = data.id;
-        tty.terms[data.id] = tab;
-        win.resize(data.cols, data.rows);
-        tab.setProcessName(data.process);
-        tty.emit('open tab', tab);
-        tab.emit('open');
-      });
-      tty.socket.emit = emit;
-    }
-    tty.get_default_window().maximize();
-  });
+  //tty.socket.on('sync', function(terms) {
+  //  console.log('Attempting to sync...');
+  //  console.log(terms);
+  //
+  //  tty.reset();
+  //  if (Object.keys(terms).length == 0){
+  //    var win = tty.get_default_window();
+  //  }else{
+  //    var emit = tty.socket.emit;
+  //    tty.socket.emit = function() {};
+  //    Object.keys(terms).forEach(function(key, index) {
+  //      // windows always have 1 terminal....
+  //      // this code is wierd... windows always make a term
+  //      // so I guess we patch some connection settings or something...
+  //      var win = tty.get_default_window();
+  //      var data = terms[key]
+  //      var tab;
+  //      if (index == 0){
+  //        tab = win.tabs[0];
+  //      }else{
+  //        tab = win.createTab();
+  //      }
+  //      delete tty.terms[tab.id];
+  //      tab.pty = data.pty;
+  //      tab.id = data.id;
+  //      tty.terms[data.id] = tab;
+  //      win.resize(data.cols, data.rows);
+  //      tab.setProcessName(data.process);
+  //      tty.emit('open tab', tab);
+  //      tab.emit('open');
+  //    });
+  //    tty.socket.emit = emit;
+  //  }
+  //  tty.get_default_window().maximize();
+  //});
 
   // We would need to poll the os on the serverside
   // anyway. there's really no clean way to do this.
@@ -216,6 +216,18 @@ tty.reset = function() {
 
   tty.emit('reset');
 };
+
+/**
+ * maximize windows
+ */
+tty.maximizeWindows = function () {
+  var i = tty.windows.length
+    , win;
+  while (i--) {
+    win = tty.windows[i];
+    win.maximize();
+  }
+}
 
 /**
  * Window
@@ -264,9 +276,9 @@ function Window(socket) {
   this.rows = Terminal.geometry[1];
 
   el.appendChild(grip);
-  el.appendChild(bar);
+  //el.appendChild(bar);
 
-  body.appendChild(el);
+  //body.appendChild(el);
 
   tty.windows.push(this);
 
@@ -468,8 +480,8 @@ Window.prototype.maximize = function() {
   var m = {
     cols: term.cols,
     rows: term.rows,
-    left: el.offsetLeft,
-    top: el.offsetTop,
+   // left: el.offsetLeft,
+    //top: el.offsetTop,
     root: root.className
   };
 
