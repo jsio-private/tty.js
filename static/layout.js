@@ -2,6 +2,18 @@
   var ConfigProvider = {
     getDefaultConfig: function () {
       return {
+        settings:{
+          hasHeaders: true,
+          constrainDragToContainer: true,
+          reorderEnabled: true,
+          selectionEnabled: false,
+          popoutWholeStack: false,
+          blockedPopoutsThrowError: false,
+          closePopoutsOnUnload: false,
+          showPopoutIcon: false,
+          showMaximiseIcon: false,
+          showCloseIcon: true
+        },
         content: [{
           type: 'stack',
           content: [{
@@ -104,8 +116,6 @@
   };
 
   Layout.prototype._cleanControls = function (stack) {
-    stack.header.controlsContainer.find('.lm_popout').remove();
-    stack.header.controlsContainer.find('.lm_maximise').remove();
     stack.header.controlsContainer.find('.lm_close').remove();
   }
 
@@ -196,12 +206,16 @@
     this.layout.init();
   };
 
-  tty.on('load', function () {
-    tty.socket.on('sync', function(state) {
-      tty.reset();
-      var layout = new Layout(state, tty);
-      tty.maximizeWindows();
+  var self = this;
+
+  self.tty.on('load', function () {
+    self.tty.socket.on('sync', function(state) {
+      self.tty.reset();
+      var layout = new Layout(state, self.tty);
+      self.tty.maximizeWindows();
       layout.init();
+
+      self.tty.layout = layout;
     });
   });
 }).call(function() {
