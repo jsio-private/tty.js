@@ -34,12 +34,14 @@
     getColumnConfig: function () {
       return {
         type: 'column',
-          content:[]
+        title: 'bash',
+        content:[]
       };
     },
     getRowConfig: function () {
       return {
         type: 'row',
+        title: 'bash',
         content:[]
       };
     }
@@ -196,6 +198,70 @@
         return i;
       }
       i++;
+    }
+  };
+
+  Layout.prototype._getRootStack = function () {
+    var rootStacks = this.layout.root.getItemsByType('stack');
+
+    if (rootStacks.length) {
+      return rootStacks[0];
+    }
+  };
+
+  Layout.prototype.getActiveTab = function () {
+    var rootStack = this._getRootStack();
+    return rootStack ? rootStack.getActiveContentItem() : null;
+  };
+
+  Layout.prototype.getActivePane = function () {
+    var activeTab = this.getActiveTab();
+    if (activeTab) {
+      // TODO finish this part
+      return activeTab;
+    }
+  };
+
+  Layout.prototype.focusTab = function (index) {
+    var rootStack = this._getRootStack();
+
+    if (rootStack && rootStack.contentItems[index]) {
+      return rootStack.setActiveContentItem(rootStack.contentItems[index]);
+    }
+  };
+
+  Layout.prototype.focusNextTab = function () {
+    var active = this.getActiveTab();
+    if (active) {
+      return this.focusTab(this.getStackIndex(active) + 1);
+    }
+  };
+
+  Layout.prototype.focusPreviousTab = function () {
+    var active = this.getActiveTab();
+    if (active) {
+      return this.focusTab(this.getStackIndex(active) - 1);
+    }
+  };
+
+  Layout.prototype.addNewTab = function () {
+    var rootStack = this._getRootStack();
+    if (rootStack) {
+      return this.newTab(rootStack);
+    }
+  };
+
+  Layout.prototype.splitActiveVertical = function () {
+    var active = this.getActivePane();
+    if (active) {
+      return this.splitVertical(active);
+    }
+  };
+
+  Layout.prototype.splitActiveHorizontal = function () {
+    var active = this.getActivePane();
+    if (active) {
+      return this.splitHorizontal(active);
     }
   };
 

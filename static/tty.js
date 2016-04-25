@@ -829,7 +829,7 @@ Tab.prototype.hookKeys = function() {
   });
 
   this.on('request create', function() {
-    this.window.createTab();
+    tty.layout.addNewTab();
   });
 
   this.on('request term', function(key) {
@@ -839,11 +839,19 @@ Tab.prototype.hookKeys = function() {
   });
 
   this.on('request term next', function(key) {
-    this.window.nextTab();
+    tty.layout.focusNextTab();
   });
 
   this.on('request term previous', function(key) {
-    this.window.previousTab();
+    tty.layout.focusPreviousTab();
+  });
+
+  this.on('request split vertical', function(key) {
+    tty.layout.splitActiveVertical();
+  });
+
+  this.on('request split horizontal', function(key) {
+    tty.layout.splitActiveHorizontal();
   });
 };
 
