@@ -35,7 +35,7 @@ body {
  */
 
 .window {
-  padding: 2px;
+  padding: 2px 4px 4px 2px;
   border: #fafafa solid 1px;
   background: #222;
   z-index: 1000;
@@ -199,6 +199,11 @@ a:active, a:hover {
 /**
  * GoldenLayout override
  */
+.lm_root {
+    top: 0;
+    left: 0;
+    position: absolute !important;
+}
 .lm_header .lm_controls > li {
     color: #fff;
 }
