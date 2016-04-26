@@ -44,6 +44,13 @@
         title: 'bash',
         content:[]
       };
+    },
+    getStackConfig: function () {
+      return {
+        type: 'stack',
+        title: 'bash',
+        content:[]
+      };
     }
   };
 
@@ -91,7 +98,7 @@
       container.on('resize', function () {
         setTimeout(tty.maximizeWindows, 200);
       });
-      container.on('destroy', function () {
+      container.on('close', function () {
         win.destroy();
       });
     });
