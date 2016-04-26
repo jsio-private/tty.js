@@ -82,6 +82,11 @@
       container.on('show', function () {
         setTimeout(tty.maximizeWindows, 200);
         win.focus();
+
+        if (!container.dropControlProceeded) {
+          container.dropControlProceeded = true;
+          self._controlDrop(container);
+        }
       });
       container.on('resize', function () {
         setTimeout(tty.maximizeWindows, 200);
@@ -111,6 +116,26 @@
     win.on('focus', function () {
       self.activeComponent = container.parent;
     });
+  };
+
+  /**
+   * Changing drag&drop default behaviour
+   *
+   * @param container
+   * @private
+   */
+  Layout.prototype._controlDrop = function (container) {
+    var stack = container.parent.isStack ? container.parent : container.parent.parent;
+
+    // Dropping to tabs is allowed only for root stack
+    if (stack.isStack && !stack.parent.isRoot) {
+      var originalGetArea = stack._$getArea;
+      stack._$getArea = function () {
+        var area = originalGetArea.call(stack);
+        delete stack._contentAreaDimensions.header;
+        return area;
+      };
+    }
   };
 
   Layout.prototype.manageControls = function () {
