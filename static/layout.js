@@ -17,10 +17,10 @@
         content: [{
           type: 'stack',
           content: [{
-              type: 'component',
-              title: 'bash',
-              componentName: 'bash'
-            }]
+            type: 'component',
+            title: 'bash',
+            componentName: 'bash'
+          }]
         }]
       };
     },
@@ -57,6 +57,7 @@
     }
 
     self.tty = tty;
+    self.activeComponent = null;
   };
 
   Layout.prototype.watchStateChange = function () {
@@ -69,25 +70,12 @@
 
   Layout.prototype.registerComponents = function () {
     var tty = this.tty;
+    var self = this;
 
-    this.layout.registerComponent('bash', function(container, componentState){
+    self.layout.registerComponent('bash', function(container, componentState){
       var win = new tty.Window;
 
-      win.on('open', function () {
-        var tab = win.tabs[0];
-
-        if ('term_id' in componentState) {
-          win.restoreTab(componentState);
-        } else {
-          container.setState({
-            'pty': tab.pty,
-            'term_id': tab.id,
-            'rows': win.rows,
-            'cols': win.cols,
-            'process': tab.process
-          });
-        }
-      });
+      self._bindWindowsEvents(win, container, componentState);
 
       container.getElement().get(0).appendChild(win.element);
 
@@ -98,6 +86,30 @@
       container.on('resize', function () {
         setTimeout(tty.maximizeWindows, 200);
       });
+    });
+  };
+
+  Layout.prototype._bindWindowsEvents = function (win, container, componentState) {
+    var self = this;
+
+    win.on('open', function () {
+      var tab = win.tabs[0];
+
+      if ('term_id' in componentState) {
+        win.restoreTab(componentState);
+      } else {
+        container.setState({
+          'pty': tab.pty,
+          'term_id': tab.id,
+          'rows': win.rows,
+          'cols': win.cols,
+          'process': tab.process
+        });
+      }
+    });
+
+    win.on('focus', function () {
+      self.activeComponent = container.parent;
     });
   };
 
@@ -183,10 +195,19 @@
     var index = this.getStackIndex(stack);
 
     parent.addChild(parentConfig, index);
-    parent.removeChild(stack, true);
+    var newParent = parent.contentItems[index];
 
-    parent.contentItems[index].addChild(stack, 0);
-    parent.contentItems[index].addChild(ConfigProvider.getBlankPaneConfig());
+    if (parent.parent.isRoot) {
+      // special case
+      var stackConfig = stack.config;
+      parent.removeChild(stack);
+      newParent.addChild(stackConfig);
+    } else {
+      parent.removeChild(stack, true);
+      newParent.addChild(stack);
+    }
+
+    newParent.addChild(ConfigProvider.getBlankPaneConfig());
   };
 
   Layout.prototype.getStackIndex = function (stack) {
@@ -215,11 +236,14 @@
   };
 
   Layout.prototype.getActivePane = function () {
-    var activeTab = this.getActiveTab();
-    if (activeTab) {
-      // TODO finish this part
-      return activeTab;
+    if (!this.activeComponent) {
+      return this.getActiveTab();
     }
+
+    var activePane = this.activeComponent.parent;
+
+    return activePane.parent.isRoot
+      ? this.activeComponent : activePane;
   };
 
   Layout.prototype.focusTab = function (index) {

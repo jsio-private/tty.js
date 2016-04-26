@@ -35,7 +35,7 @@ body {
  */
 
 .window {
-  padding: 2px 4px 4px 2px;
+  padding: 2px;
   border: #fafafa solid 1px;
   background: #222;
   z-index: 1000;
