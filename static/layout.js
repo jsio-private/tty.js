@@ -91,6 +91,9 @@
       container.on('resize', function () {
         setTimeout(tty.maximizeWindows, 200);
       });
+      container.on('destroy', function () {
+        win.destroy();
+      });
     });
   };
 
