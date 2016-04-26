@@ -130,12 +130,23 @@
   Layout.prototype._controlDrop = function (container) {
     var stack = container.parent.isStack ? container.parent : container.parent.parent;
 
-    // Dropping to tabs is allowed only for root stack
     if (stack.isStack && !stack.parent.isRoot) {
+      // Dropping to tabs is allowed only for root stack
       var originalGetArea = stack._$getArea;
       stack._$getArea = function () {
         var area = originalGetArea.call(stack);
         delete stack._contentAreaDimensions.header;
+        return area;
+      };
+    } else if (stack.parent.isRoot) {
+      // Dropping to any other location instead of tab is disallowed for root tabs
+      var originalGetArea = stack._$getArea;
+      stack._$getArea = function () {
+        var area = originalGetArea.call(stack);
+        delete stack._contentAreaDimensions.left;
+        delete stack._contentAreaDimensions.right;
+        delete stack._contentAreaDimensions.top;
+        delete stack._contentAreaDimensions.bottom;
         return area;
       };
     }
