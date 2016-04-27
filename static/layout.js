@@ -250,7 +250,7 @@
   };
 
   Layout.prototype._addSplitVerticalBtn = function (stack) {
-    var $splitVerticalBtn = $('<li title="Split Vertical">v</li>');
+    var $splitVerticalBtn = $('<li title="Split Vertical">||</li>');
     var self = this;
 
     stack.header.controlsContainer.prepend($splitVerticalBtn);
@@ -261,7 +261,7 @@
   };
 
   Layout.prototype._addSplitHorizontalBtn = function (stack) {
-    var $splitHorizontalBtn = $('<li title="Split Horizontal">h</li>');
+    var $splitHorizontalBtn = $('<li title="Split Horizontal">=</li>');
     var self = this;
 
     stack.header.controlsContainer.prepend($splitHorizontalBtn);
