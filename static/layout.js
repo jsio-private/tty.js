@@ -183,6 +183,41 @@
     }
   };
 
+  Layout.prototype.handleClosingTabs = function () {
+    var self = this;
+
+    self.layout.on('tabCreated', function (tab) {
+      tab
+        .closeElement
+        .off( 'click' ) // unbind the current click handler
+        .click(function(event){
+          if (self.canRemoveTab(tab)) {
+            tab._onCloseClickFn(event);
+          }
+        });
+
+      tab
+        .element
+        .off( 'click' ) // unbind the current click handler
+        .click(function(event) {
+          if (event.button !== 1 || self.canRemoveTab(tab)) {
+            tab._onTabClickFn(event);
+          }
+        });
+    });
+  };
+
+  Layout.prototype.canRemoveTab = function (tab) {
+    var parent = tab.contentItem.parent;
+
+    // Tab can be removed if there are more than one tabs in root stack
+    if (parent.parent.isRoot && parent.contentItems.length < 2) {
+      return false;
+    }
+
+    return true;
+  };
+
   Layout.prototype.manageControls = function () {
     var self = this;
 
@@ -364,6 +399,7 @@
     this.registerComponents();
     this.manageControls();
     this.handleItemDrop();
+    this.handleClosingTabs();
     this.layout.init();
   };
 
