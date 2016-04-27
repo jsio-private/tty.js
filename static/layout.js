@@ -193,6 +193,7 @@
         .click(function(event){
           if (self.canRemoveTab(tab)) {
             tab._onCloseClickFn(event);
+            self._removeRedundantStacks();
           }
         });
 
@@ -202,6 +203,10 @@
         .click(function(event) {
           if (event.button !== 1 || self.canRemoveTab(tab)) {
             tab._onTabClickFn(event);
+
+            if (event.button === 1) { // middle button closes tab
+              self._removeRedundantStacks();
+            }
           }
         });
     });
