@@ -207,3 +207,6 @@ a:active, a:hover {
 .lm_header .lm_controls > li {
     color: #fff;
 }
+.lm_root > .lm_stack > .lm_header {
+    margin-bottom: 2px;
+}
