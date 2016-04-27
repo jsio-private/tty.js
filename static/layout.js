@@ -159,6 +159,30 @@
     }
   };
 
+  Layout.prototype.handleItemDrop = function () {
+    var self = this;
+
+    self.layout.on('itemDropped', function () {
+      self._removeRedundantStacks();
+    });
+  };
+
+  Layout.prototype._removeRedundantStacks = function () {
+    var rootStack = this._getRootStack(),
+      i = 0;
+
+    for (i = 0; i < rootStack.contentItems.length; i++) {
+      var item = rootStack.contentItems[i];
+
+      // removing unnecessary stack
+      if (item.contentItems.length == 1 && !item.isComponent) {
+        var childItem = item.contentItems[0];
+        item.contentItems = [];
+        rootStack.replaceChild(item, childItem, true);
+      }
+    }
+  };
+
   Layout.prototype.manageControls = function () {
     var self = this;
 
@@ -339,6 +363,7 @@
     this.watchStateChange();
     this.registerComponents();
     this.manageControls();
+    this.handleItemDrop();
     this.layout.init();
   };
 

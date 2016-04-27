@@ -20,7 +20,7 @@
     "term.js": "git://github.com/weebygames/term.js",
     "optimist" : "~0.6.0",
     "nunjucks" : "0.1.9",
-    "golden-layout": "1.5.1"
+    "golden-layout": "git@github.com:goranprijic/golden-layout.git"
   },
   "engines": {
     "node": ">= 0.8.0"
