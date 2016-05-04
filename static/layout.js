@@ -80,7 +80,7 @@
     var self = this;
 
     self.layout.registerComponent('bash', function(container, componentState){
-      var win = new tty.Window;
+      var win = new tty.Window(componentState);
 
       self._bindWindowsEvents(win, container, componentState);
 
@@ -113,15 +113,13 @@
     win.on('open', function () {
       var tab = win.tabs[0];
 
-      if ('term_id' in componentState) {
-        win.restoreTab(componentState, container.width, container.height);
-      } else {
-        container.setState({
-          'pty': tab.pty,
-          'term_id': tab.id,
-          'process': tab.process
-        });
-      }
+      container.setState({
+        'id': tab.id,
+        'pty': tab.pty,
+        'process': tab.process
+      });
+
+      win.resize(container.width, container.height);
     });
 
     win.on('focus', function () {

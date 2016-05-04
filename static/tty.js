@@ -67,16 +67,9 @@
   /**
    * Open
    */
-  tty.get_default_window = function(){
-    if (tty.windows.length > 0){
-      return tty.windows[0];
-    }else{
-      return new Window;
-    }
-  }
   tty.open = function() {
     if (document.location.pathname) {
-      base = document.location.pathname;
+      var base = document.location.pathname;
       if (base[0] == "/"){
         base = document.location.pathname.slice(1);
       }
@@ -121,9 +114,6 @@
     tty.socket.on('connect', function() {
       tty.reset();
       tty.emit('connect');
-      // w = tty.get_default_window();
-      // // hack.. for some reason something else is sizing the window wrong...
-      // w.maximize();
     });
 
     tty.socket.on('data', function(id, data) {
@@ -173,7 +163,7 @@
    * Window
    */
 
-  function Window(socket) {
+  function Window(state) {
     var self = this;
 
     EventEmitter.call(this);
@@ -199,7 +189,7 @@
       bar.newButton = button;
     }
 
-    this.socket = socket || tty.socket;
+    this.socket = tty.socket;
     this.element = el;
     this.bar = bar;
     this.button = button;
@@ -214,8 +204,11 @@
 
     tty.windows.push(this);
 
-    this.createTab();
-    this.focus();
+    if ('id' in state) {
+      this.restoreTab(state);
+    } else {
+      this.createTab();
+    }
 
     this.tabs[0].once('open', function() {
       tty.emit('open window', self);
@@ -300,6 +293,10 @@
     return new Tab(this, this.socket);
   };
 
+  Window.prototype.restoreTab = function(data) {
+    return new Tab(this, this.socket, data);
+  };
+
   Window.prototype.highlight = function() {
     var self = this;
 
@@ -335,33 +332,11 @@
     return this.focusTab(false);
   };
 
-  Window.prototype.restoreTab = function(data, width, height) {
-    // this code is copied from tty.open method
-    // TODO clean this code
-    var win = this;
-    var emit = tty.socket.emit;
-    tty.socket.emit = function() {};
-    var tab = win.tabs[0];
-    delete tty.terms[tab.id];
-    tab.pty = data.pty;
-    tab.id = data.term_id;
-    tty.terms[data.term_id] = tab;
-    tab.setProcessName(data.process);
-    tty.emit('open tab', tab);
-    tab.emit('open');
-
-    setTimeout(function() {
-      win.resize(width, height);
-    }, 300);
-
-    tty.socket.emit = emit;
-  };
-
   /**
    * Tab
    */
   var num_tabs = 0
-  function Tab(win, socket) {
+  function Tab(win, socket, restoreData) {
     var self = this;
 
     num_tabs += 1;
@@ -398,18 +373,28 @@
 
     win.tabs.push(this);
 
-    this.socket.emit('create', cols, rows, function(err, data) {
-      if (err) return self._destroy();
-      self.pty = data.pty;
-      self.id = data.id;
-      tty.terms[self.id] = self;
-      self.setProcessName(data.process);
-      tty.emit('open tab', self);
-      self.emit('open');
-    });
+    if (restoreData) {
+      self.syncTerminalData(restoreData);
+    } else {
+      this.socket.emit('create', cols, rows, function(err, data) {
+        if (err) return self._destroy();
+        self.syncTerminalData(data);
+      });
+    }
   };
 
   inherits(Tab, Terminal);
+
+  Tab.prototype.syncTerminalData = function(data) {
+    var self = this;
+
+    self.pty = data.pty;
+    self.id = data.id;
+    tty.terms[self.id] = self;
+    self.setProcessName(data.process);
+    tty.emit('open tab', self);
+    self.emit('open');
+  };
 
 // We could just hook in `tab.on('data', ...)`
 // in the constructor, but this is faster.
