@@ -101,6 +101,9 @@
       container.on('close', function () {
         win.destroy();
       });
+      container._element.on('click', function () {
+        win.focus();
+      });
     });
   };
 
