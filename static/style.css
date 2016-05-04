@@ -15,10 +15,6 @@ div {
   margin: 0;
 }
 
-html.maximized {
-  overflow: hidden;
-}
-
 body {
   margin: 25px;
 }
@@ -35,20 +31,13 @@ body {
  */
 
 .window {
-  padding: 2px;
-  border: #fafafa solid 1px;
-  background: #222;
-  z-index: 1000;
-  box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
-}
-
-.maximized .window {
-  border: none;
+  padding: 0px;
+  background: #000;
+  box-sizing: border-box;
   box-shadow: none;
-}
-
-.window {
-  box-shadow: none;
+  border: 2px solid #222;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 .bar {
@@ -68,10 +57,6 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.bar,
-.maximized .bar {
 }
 
 .title {
@@ -138,20 +123,8 @@ body {
     z-index: 2;
 }
 
-
-.grip {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 22px;
-  height: 22px;
-  cursor: se-resize;
-  z-index: -1;
-  background: transparent;
-}
-
 .terminal {
-  padding: 5px;
+  padding: 3px;
   font-family: "Monaco", "DejaVu Sans Mono", "Liberation Mono", monospace;
   font-size: 12px;
   font-weight: bold;
@@ -164,7 +137,6 @@ body {
   -ms-box-sizing: border-box;
   -o-box-sizing: border-box;
   background: #222;
-  top: 1px;
   white-space: nowrap;
   position: relative;
 }
@@ -200,13 +172,14 @@ a:active, a:hover {
  * GoldenLayout override
  */
 .lm_root {
-    top: 0;
-    left: 0;
-    position: absolute !important;
+  top: 0;
+  left: 0;
+  position: absolute !important;
 }
 .lm_header .lm_controls > li {
-    color: #fff;
+  color: #fff;
 }
 .lm_root > .lm_stack > .lm_header {
-    margin-bottom: 2px;
+  margin-bottom: 2px;
 }
+

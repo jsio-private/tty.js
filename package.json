@@ -17,7 +17,7 @@
     "express": "3.4.4",
     "socket.io": "0.9.16",
     "pty.js": ">= 0.2.13",
-    "term.js": "git://github.com/weebygames/term.js",
+    "term.js": "git://github.com/goranprijic/term.js",
     "optimist" : "~0.6.0",
     "nunjucks" : "0.1.9",
     "golden-layout": "git@github.com:goranprijic/golden-layout.git"

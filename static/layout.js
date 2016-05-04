@@ -87,7 +87,7 @@
       container.getElement().get(0).appendChild(win.element);
 
       container.on('show', function () {
-        setTimeout(tty.maximizeWindows, 200);
+        win.resize(container.width, container.height);
         win.focus();
 
         if (!container.dropControlProceeded) {
@@ -96,7 +96,7 @@
         }
       });
       container.on('resize', function () {
-        setTimeout(tty.maximizeWindows, 200);
+        win.resize(container.width, container.height);
       });
       container.on('close', function () {
         win.destroy();
@@ -111,13 +111,11 @@
       var tab = win.tabs[0];
 
       if ('term_id' in componentState) {
-        win.restoreTab(componentState);
+        win.restoreTab(componentState, container.width, container.height);
       } else {
         container.setState({
           'pty': tab.pty,
           'term_id': tab.id,
-          'rows': win.rows,
-          'cols': win.cols,
           'process': tab.process
         });
       }
@@ -414,7 +412,6 @@
     self.tty.socket.on('sync', function(state) {
       self.tty.reset();
       var layout = new Layout(state, self.tty);
-      self.tty.maximizeWindows();
       layout.init();
 
       self.tty.layout = layout;
