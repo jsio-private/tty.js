@@ -184,3 +184,47 @@ a:active, a:hover {
   margin-bottom: 2px;
 }
 
+/**
+ * Modal style
+ */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #222;
+  width: 40%; /* Could be more or less, depending on screen size */
+  color: #222;
+}
+
+.close {
+  color: #888;
+  float: right;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #222;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shortcuts-help ul {
+  padding: 0 30px;
+}
+
+.shortcuts-help ul li span {
+  display: inline-block;
+  float: right;
+}

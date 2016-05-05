@@ -1,16 +1,22 @@
 ;(function() {
   var tty = this.tty;
 
-  var shortcutsHelp = "Available shortcuts:\n\n" +
-                      "create tab : alt + shift + c\n" +
-                      "next tab : alt + shift + right arrow\n" +
-                      "previous tab : alt + shift + left arrow\n" +
-                      "split pane vertically : alt + shift + v\n" +
-                      "split pane horizontally : alt + shift + h\n" +
-                      "switch pane : alt + shift + down arrow\n";
+  var shortcutsHelp = "<div class=\"shortcuts-help\">\
+                        <strong>Available shortcuts:</strong> \
+                        <ul>\
+                          <li>create tab : <span>alt + shift + c</span></li>\
+                          <li>next tab : <span>alt + shift + right arrow</span></li>\
+                          <li>previous tab : <span>alt + shift + left arrow</span></li>\
+                          <li>split pane vertically : <span>alt + shift + v</span></li>\
+                          <li>split pane horizontally : <span>alt + shift + h</span></li>\
+                          <li>switch pane : <span>alt + shift + down arrow</span></li>\
+                        </ul>\
+                      </div>";
 
   var Tab = tty.Tab,
-      cancel = tty.Terminal.cancel;
+      cancel = tty.Terminal.cancel,
+      Modal = this.Modal,
+      shortcutHelpModal;
 
   Tab.prototype._keyDown = Tab.prototype.keyDown;
 
@@ -41,7 +47,10 @@
           tty.layout.nextPane();
           return cancel(ev);
         case 191: // forward slash
-          alert(shortcutsHelp);
+          if (!shortcutHelpModal) {
+            shortcutHelpModal = new Modal(shortcutsHelp);
+          }
+          shortcutHelpModal.show();
           return cancel(ev);
         default:
       }
