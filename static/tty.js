@@ -268,8 +268,15 @@
     var charSize = term.measureCharacter();
     var fontSize = parseFloat(window.getComputedStyle(term.element, null).getPropertyValue('font-size')); // get terminal font size
     var widthScaleCoefficient = 1.63; // empirically identified
-    x = term.element.offsetWidth * widthScaleCoefficient / fontSize | 0;
-    y = (term.element.offsetHeight - 5) / charSize.height | 0;
+    var innerWidth = width - 4; // subtract border width
+    var innerHeight = height - 4; // subtract border width
+
+    x = innerWidth * widthScaleCoefficient / fontSize | 0;
+    y = (innerHeight - 5) / charSize.height | 0;
+
+    if (!x || !y) {
+      return;
+    }
 
     this.cols = x;
     this.rows = y;

@@ -85,6 +85,7 @@
       self._bindWindowsEvents(win, container, componentState);
 
       container.getElement().get(0).appendChild(win.element);
+      container.win = win;
 
       container.on('show', function () {
         win.focus();
@@ -282,7 +283,7 @@
     var parent = stack.parent;
 
     if (parent.isRow) {
-      parent.addChild(ConfigProvider.getBlankPaneConfig(), this.getStackIndex(stack) + 1);
+      parent.addChild(ConfigProvider.getBlankPaneConfig(), this.getItemIndex(stack) + 1);
     } else {
       this._injectParent(stack, ConfigProvider.getRowConfig());
     }
@@ -292,7 +293,7 @@
     var parent = stack.parent;
 
     if (parent.isColumn) {
-      parent.addChild(ConfigProvider.getBlankPaneConfig(), this.getStackIndex(stack) + 1);
+      parent.addChild(ConfigProvider.getBlankPaneConfig(), this.getItemIndex(stack) + 1);
     } else {
       this._injectParent(stack, ConfigProvider.getColumnConfig());
     }
@@ -300,7 +301,7 @@
 
   Layout.prototype._injectParent = function (stack, parentConfig) {
     var parent = stack.parent;
-    var index = this.getStackIndex(stack);
+    var index = this.getItemIndex(stack);
 
     parent.addChild(parentConfig, index);
     var newParent = parent.contentItems[index];
@@ -318,12 +319,12 @@
     newParent.addChild(ConfigProvider.getBlankPaneConfig());
   };
 
-  Layout.prototype.getStackIndex = function (stack) {
-    var contentItems = stack.parent.contentItems;
+  Layout.prototype.getItemIndex = function (item) {
+    var contentItems = item.parent.contentItems;
     var i = 0;
 
     while (i < contentItems.length) {
-      if (contentItems[i] == stack) {
+      if (contentItems[i] == item) {
         return i;
       }
       i++;
@@ -365,14 +366,14 @@
   Layout.prototype.focusNextTab = function () {
     var active = this.getActiveTab();
     if (active) {
-      return this.focusTab(this.getStackIndex(active) + 1);
+      return this.focusTab(this.getItemIndex(active) + 1);
     }
   };
 
   Layout.prototype.focusPreviousTab = function () {
     var active = this.getActiveTab();
     if (active) {
-      return this.focusTab(this.getStackIndex(active) - 1);
+      return this.focusTab(this.getItemIndex(active) - 1);
     }
   };
 
@@ -394,6 +395,39 @@
     var active = this.getActivePane();
     if (active) {
       return this.splitHorizontal(active);
+    }
+  };
+
+  Layout.prototype.getItemComponents = function (item) {
+    var components = [];
+    var i;
+
+    for (i = 0; i < item.contentItems.length; i++) {
+      if (item.contentItems[i].isComponent) {
+        components.push(item.contentItems[i]);
+      } else {
+        components = components.concat(this.getItemComponents(item.contentItems[i]));
+      }
+    }
+
+    return components;
+  };
+
+  Layout.prototype.nextPane = function () {
+    var activeTab = this.getActiveTab();
+
+    if (activeTab) {
+      var components = this.getItemComponents(activeTab);
+      var i = 0;
+
+      while (i < components.length) {
+        if (components[i] == this.activeComponent) {
+          var next = (i == components.length - 1) ? components[0] : components[i+1];
+          next.container.win.focus();
+          return;
+        }
+        i++;
+      }
     }
   };
 

@@ -29,6 +29,9 @@
         case 86: // v
           tty.layout.splitActiveVertical();
           return cancel(ev);
+        case 40: // down arrow
+          tty.layout.nextPane();
+          return cancel(ev);
         default:
       }
     }
