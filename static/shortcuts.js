@@ -1,6 +1,14 @@
 ;(function() {
   var tty = this.tty;
 
+  var shortcutsHelp = "Available shortcuts:\n\n" +
+                      "create tab : alt + shift + c\n" +
+                      "next tab : alt + shift + right arrow\n" +
+                      "previous tab : alt + shift + left arrow\n" +
+                      "split pane vertically : alt + shift + v\n" +
+                      "split pane horizontally : alt + shift + h\n" +
+                      "switch pane : alt + shift + down arrow\n";
+
   var Tab = tty.Tab,
       cancel = tty.Terminal.cancel;
 
@@ -31,6 +39,9 @@
           return cancel(ev);
         case 40: // down arrow
           tty.layout.nextPane();
+          return cancel(ev);
+        case 191: // forward slash
+          alert(shortcutsHelp);
           return cancel(ev);
         default:
       }
