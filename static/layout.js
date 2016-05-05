@@ -80,15 +80,15 @@
     var self = this;
 
     self.layout.registerComponent('bash', function(container, componentState){
-      var win = new tty.Window(componentState);
+      var terminal = new tty.Terminal(componentState);
 
-      self._bindWindowsEvents(win, container, componentState);
+      self._bindTerminalEvents(terminal, container, componentState);
 
-      container.getElement().get(0).appendChild(win.element);
-      container.win = win;
+      container.getElement().get(0).appendChild(terminal.element);
+      container.terminal = terminal;
 
       container.on('show', function () {
-        win.focus();
+        terminal.focus();
 
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;
@@ -96,22 +96,22 @@
         }
       });
       container.on('resize', function () {
-        win.resize(container.width, container.height);
+        terminal.resize(container.width, container.height);
       });
       container.on('close', function () {
-        win.destroy();
+        terminal.destroy();
       });
       container._element.on('click', function () {
-        win.focus();
+        terminal.focus();
       });
     });
   };
 
-  Layout.prototype._bindWindowsEvents = function (win, container, componentState) {
+  Layout.prototype._bindTerminalEvents = function (terminal, container, componentState) {
     var self = this;
 
-    win.on('open', function () {
-      var tab = win.tabs[0];
+    terminal.on('open', function () {
+      var tab = terminal.tabs[0];
 
       container.setState({
         'id': tab.id,
@@ -119,10 +119,10 @@
         'process': tab.process
       });
 
-      win.resize(container.width, container.height);
+      terminal.resize(container.width, container.height);
     });
 
-    win.on('focus', function () {
+    terminal.on('focus', function () {
       self.activeComponent = container.parent;
     });
   };
@@ -423,7 +423,7 @@
       while (i < components.length) {
         if (components[i] == this.activeComponent) {
           var next = (i == components.length - 1) ? components[0] : components[i+1];
-          next.container.win.focus();
+          next.container.terminal.focus();
           return;
         }
         i++;

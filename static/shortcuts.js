@@ -10,7 +10,7 @@
                       "switch pane : alt + shift + down arrow\n";
 
   var Tab = tty.Tab,
-      cancel = tty.Terminal.cancel;
+      cancel = Terminal.cancel;
 
   Tab.prototype._keyDown = Tab.prototype.keyDown;
 
