@@ -87,7 +87,6 @@
       container.getElement().get(0).appendChild(win.element);
 
       container.on('show', function () {
-        win.resize(container.width, container.height);
         win.focus();
 
         if (!container.dropControlProceeded) {
