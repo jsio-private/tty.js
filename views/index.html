@@ -2,6 +2,8 @@
 <head>
     <title>tty.js</title>
     <link rel="stylesheet" href="{{static_url}}/style.css">
+    <link rel="stylesheet" href="{{ url_prefix }}/vendors/golden-layout/src/css/goldenlayout-base.css" />
+    <link rel="stylesheet" href="{{ url_prefix }}/vendors/golden-layout/src/css/goldenlayout-dark-theme.css" />
 </head>
 
 <body>
@@ -17,8 +19,13 @@
 
 <script src="{{wakari_cdn}}/application.js"></script>
 <script src="{{ url_prefix }}/socket.io/socket.io.js"></script>
+<script src="{{ url_prefix }}/vendors/jquery/dist/jquery.js"></script>
+<script src="{{ url_prefix }}/vendors/golden-layout/dist/goldenlayout.js"></script>
+<script src="{{ static_url }}/modal.js"></script>
 <script src="{{static_url}}/term.js"></script>
 <script src="{{static_url}}/options.js"></script>
 <script src="{{static_url}}/tty.js"></script>
+<script src="{{static_url}}/layout.js"></script>
+<script src="{{static_url}}/shortcuts.js"></script>
 
 </body>

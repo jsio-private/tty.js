@@ -5,7 +5,7 @@
 
 html, body {
   margin: 0;
-  background: #1c232c;
+  background: #222;
   padding: 0;
 }
 
@@ -13,10 +13,6 @@ div {
   border: 0;
   padding: 0;
   margin: 0;
-}
-
-html.maximized {
-  overflow: hidden;
 }
 
 body {
@@ -35,23 +31,13 @@ body {
  */
 
 .window {
-  padding-top: 22px;
-  border: #fafafa solid 1px;
-  background: #1c232c;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
-}
-
-.maximized .window {
-  border: none;
+  padding: 0px;
+  background: #000;
+  box-sizing: border-box;
   box-shadow: none;
-}
-
-.window {
-  box-shadow: none;
+  border: 2px solid #222;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 .bar {
@@ -71,10 +57,6 @@ body {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.bar,
-.maximized .bar {
 }
 
 .title {
@@ -126,11 +108,11 @@ body {
 }
 
 .tab.selected {
-    background: #1c232c;
+    background: #222;
     color: #FFF;
     z-index: 3;
     box-shadow: 0px 3px 6px 2px rgba(0, 0, 0, 0.3);
-    border-bottom-color: #1c232c;
+    border-bottom-color: #222;
 }
 .bar:before {
     position: absolute;
@@ -141,20 +123,8 @@ body {
     z-index: 2;
 }
 
-
-.grip {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 22px;
-  height: 22px;
-  cursor: se-resize;
-  z-index: -1;
-  background: transparent;
-}
-
 .terminal {
-  padding: 5px;
+  padding: 3px;
   font-family: "Monaco", "DejaVu Sans Mono", "Liberation Mono", monospace;
   font-size: 12px;
   font-weight: bold;
@@ -166,10 +136,10 @@ body {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
   -o-box-sizing: border-box;
-  background: #1c232c;
-  top: 1px;
+  background: #222;
   white-space: nowrap;
   position: relative;
+  height: 100%;
 }
 
 .reverse-video {
@@ -197,4 +167,64 @@ li {
 
 a:active, a:hover {
   color: orange;
+}
+
+/**
+ * GoldenLayout override
+ */
+.lm_root {
+  top: 0;
+  left: 0;
+  position: absolute !important;
+}
+.lm_header .lm_controls > li {
+  color: #fff;
+}
+.lm_root > .lm_stack > .lm_header {
+  margin-bottom: 2px;
+}
+
+/**
+ * Modal style
+ */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #222;
+  width: 40%; /* Could be more or less, depending on screen size */
+  color: #222;
+}
+
+.close {
+  color: #888;
+  float: right;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #222;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shortcuts-help ul {
+  padding: 0 30px;
+}
+
+.shortcuts-help ul li span {
+  display: inline-block;
+  float: right;
 }
