@@ -98,9 +98,6 @@
       container.on('resize', function () {
         terminal.resize(container.width, container.height);
       });
-      container.on('close', function () {
-        terminal.destroy();
-      });
       container._element.on('click', function () {
         terminal.focus();
       });
@@ -191,6 +188,9 @@
         .off( 'click' ) // unbind the current click handler
         .click(function(event){
           if (self.canRemoveTab(tab)) {
+            if (tab.contentItem.isComponent) {
+              tab.contentItem.container.terminal.destroy();
+            }
             tab._onCloseClickFn(event);
             self._removeRedundantStacks();
           }
@@ -204,6 +204,9 @@
             tab._onTabClickFn(event);
 
             if (event.button === 1) { // middle button closes tab
+              if (tab.contentItem.isComponent) {
+                tab.contentItem.container.terminal.destroy();
+              }
               self._removeRedundantStacks();
             }
           }

@@ -111,7 +111,7 @@
     this.emit('resize', cols, rows);
   };
 
-  _Terminal.prototype.__destroy = _Terminal.prototype.destroy;
+  _Terminal.prototype._destroy = _Terminal.prototype.destroy;
   _Terminal.prototype.destroy = function () {
     if (this.destroyed) {
       return;
