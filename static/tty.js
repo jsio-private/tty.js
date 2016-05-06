@@ -151,12 +151,12 @@
 
   tty.registerTerminal = function (term) {
     tty.terms[term.id] = term;
+  };
 
-    term.on('destroy', function () {
-      if (tty.terms[term.id]) {
-        delete tty.terms[term.id];
-      }
-    });
+  tty.unregisterTerminal = function (term) {
+    if (tty.terms[term.id]) {
+      delete tty.terms[term.id];
+    }
   };
 
   /**

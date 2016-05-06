@@ -80,9 +80,10 @@
     var self = this;
 
     self.layout.registerComponent('bash', function(container, componentState){
-      var terminal = new tty.Terminal(componentState);
+      var terminal = new tty.Terminal(tty.socket);
 
       self._bindTerminalEvents(terminal, container, componentState);
+      terminal.connect(componentState);
 
       container.getElement().get(0).appendChild(terminal.getElement());
       container.terminal = terminal;
@@ -107,13 +108,13 @@
   Layout.prototype._bindTerminalEvents = function (terminal, container, componentState) {
     var self = this;
 
-    terminal.on('open', function () {
-      var tab = terminal.tabs[0];
+    terminal.on('connect', function () {
+      self.tty.registerTerminal(terminal);
 
       container.setState({
-        'id': tab.id,
-        'pty': tab.pty,
-        'process': tab.process
+        'id': terminal.id,
+        'pty': terminal.pty,
+        'process': terminal.process
       });
 
       terminal.resize(container.width, container.height);
@@ -121,6 +122,26 @@
 
     terminal.on('focus', function () {
       self.activeComponent = container.parent;
+    });
+
+    terminal.on('request create', function() {
+      self.addNewTab();
+    });
+
+    terminal.on('request term', function(key) {
+      self.focusTab(key);
+    });
+
+    terminal.on('request term next', function() {
+      self.focusNextTab();
+    });
+
+    terminal.on('request term previous', function() {
+      self.focusPreviousTab();
+    });
+
+    terminal.on('destroy', function () {
+      self.tty.unregisterTerminal(terminal);
     });
   };
 

@@ -5,10 +5,10 @@
     , initialTitle = this.document.title
     , BaseTerminal = Terminal;
 
-  var _Terminal = function (state) {
+  var _Terminal = function (socket) {
     var self = this;
 
-    self.socket = tty.socket;
+    self.socket = socket;
     self.element;
     self.wrapElement;
     self.process;
@@ -17,7 +17,6 @@
 
     self.open();
     self.hookKeys();
-    self.connect(state);
   };
 
   BaseTerminal.inherits(_Terminal, BaseTerminal);
@@ -51,9 +50,7 @@
     this.pty = data.pty;
     this.id = data.id;
     this.setProcessName(data.process);
-    this.emit('open');
-
-    tty.registerTerminal(this);
+    this.emit('connect');
   };
 
   _Terminal.prototype.hookKeys = function() {
@@ -64,22 +61,6 @@
         if (err) return;
         self.send(text);
       });
-    });
-
-    this.on('request create', function() {
-      tty.layout.addNewTab();
-    });
-
-    this.on('request term', function(key) {
-      tty.layout.focusTab(key);
-    });
-
-    this.on('request term next', function() {
-      tty.layout.focusNextTab();
-    });
-
-    this.on('request term previous', function() {
-      tty.layout.focusPreviousTab();
     });
   };
 
