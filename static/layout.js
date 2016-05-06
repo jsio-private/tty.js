@@ -84,7 +84,7 @@
 
       self._bindTerminalEvents(terminal, container, componentState);
 
-      container.getElement().get(0).appendChild(terminal.element);
+      container.getElement().get(0).appendChild(terminal.getElement());
       container.terminal = terminal;
 
       container.on('show', function () {

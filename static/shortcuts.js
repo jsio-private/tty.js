@@ -1,5 +1,9 @@
 ;(function() {
-  var tty = this.tty;
+  var tty = this.tty
+    , Terminal = this.tty.Terminal
+    , Modal = this.Modal
+    , cancel = this.tty.Terminal.cancel
+    , shortcutHelpModal;
 
   var shortcutsHelp = "<div class=\"shortcuts-help\">\
                         <strong>Available shortcuts:</strong> \
@@ -13,19 +17,14 @@
                         </ul>\
                       </div>";
 
-  var Tab = tty.Tab,
-      cancel = Terminal.cancel,
-      Modal = this.Modal,
-      shortcutHelpModal;
+  Terminal.prototype._keyDown = Terminal.prototype.keyDown;
 
-  Tab.prototype._keyDown = Tab.prototype.keyDown;
-
-  Tab.prototype.keyDown = function(ev) {
+  Terminal.prototype.keyDown = function(ev) {
     this.bindShortcuts(ev);
     return this._keyDown(ev);
   };
 
-  Tab.prototype.bindShortcuts = function (ev) {
+  Terminal.prototype.bindShortcuts = function (ev) {
     if (ev.altKey && ev.shiftKey) {
       switch (ev.keyCode) {
         case 37: // left arrow
