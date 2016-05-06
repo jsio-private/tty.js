@@ -54,7 +54,6 @@
    */
 
   tty.socket;
-  tty.windows;
   tty.terms;
   tty.elements;
 
@@ -90,7 +89,6 @@
       tty.socket = io.connect();
     }
 
-    tty.windows = [];
     tty.terms = {};
 
     tty.elements = {
@@ -126,10 +124,9 @@
     // clientside, rather than poll on the
     // server, and *then* send it to the client.
     setInterval(function() {
-      var i = tty.windows.length;
+      var i = tty.terms.length;
       while (i--) {
-        if (!tty.windows[i].focused) continue;
-        tty.windows[i].focused.pollProcessName();
+        tty.terms[i].pollProcessName();
       }
     }, 2 * 1000);
 
@@ -142,15 +139,24 @@
    */
 
   tty.reset = function() {
-    var i = tty.windows.length;
+    var i = tty.terms.length;
     while (i--) {
-      tty.windows[i].destroy();
+      tty.terms[i].destroy();
     }
 
-    tty.windows = [];
     tty.terms = {};
-
     tty.emit('reset');
+  };
+
+
+  tty.registerTerminal = function (term) {
+    tty.terms[term.id] = term;
+
+    term.on('destroy', function () {
+      if (tty.terms[term.id]) {
+        delete tty.terms[term.id];
+      }
+    });
   };
 
   /**
@@ -179,6 +185,7 @@
    * Expose
    */
 
+  tty.cancel = cancel;
   this.tty = tty;
 
 }).call(function() {

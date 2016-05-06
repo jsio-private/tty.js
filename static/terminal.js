@@ -53,7 +53,7 @@
     this.setProcessName(data.process);
     this.emit('open');
 
-    tty.terms[this.id] = this;
+    tty.registerTerminal(this);
   };
 
   _Terminal.prototype.hookKeys = function() {
@@ -119,12 +119,8 @@
 
     this.destroyed = true;
     this.wrapElement.parentNode.removeChild(this.wrapElement);
-
-    if (tty.terms[this.id]) {
-      delete tty.terms[this.id];
-    }
-
     this.socket.emit('kill', this.id);
+
     this._destroy();
 
     this.emit('destroy');

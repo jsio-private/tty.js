@@ -2,7 +2,7 @@
   var tty = this.tty
     , Terminal = this.tty.Terminal
     , Modal = this.Modal
-    , cancel = this.tty.Terminal.cancel
+    , cancel = this.tty.cancel
     , shortcutHelpModal;
 
   var shortcutsHelp = "<div class=\"shortcuts-help\">\
