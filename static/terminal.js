@@ -3,7 +3,8 @@
     , window = this
     , document = this.document
     , initialTitle = this.document.title
-    , BaseTerminal = Terminal;
+    , BaseTerminal = Terminal
+    , on = BaseTerminal.on;
 
   var _Terminal = function (socket) {
     var self = this;
@@ -66,7 +67,6 @@
 
   _Terminal.prototype._focus = _Terminal.prototype.focus;
   _Terminal.prototype.focus = function () {
-    this.restack();
     this.changeTitle(this.title);
     this._focus();
     this.emit('focus');
@@ -126,14 +126,6 @@
     return (innerHeight - 5) / charSize.height | 0;
   };
 
-  _Terminal.prototype.restack = function () {
-    var parent = this.element.parentNode;
-    if (parent) {
-      parent.removeChild(this.element);
-      parent.appendChild(this.element);
-    }
-  };
-
   _Terminal.prototype.changeTitle = function(title) {
     if (title) {
       this.title = sanitize(title);
@@ -155,11 +147,11 @@
   _Terminal.prototype.bindMouseSelection = function () {
     var self = this;
 
-    this.on(self.element, 'mousedown', function() {
+    on(self.element, 'mousedown', function() {
       self.stopBlink();
     });
 
-    this.on(self.element, 'mouseup', function() {
+    on(self.element, 'mouseup', function() {
       var selection = getSelectionText();
 
       if (!selection) {
