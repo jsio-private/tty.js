@@ -190,14 +190,6 @@
     }
   };
 
-  _Terminal.prototype.scroll = function() {
-    var wrapElement = this.wrapElement;
-
-    setTimeout(function () {
-      wrapElement.scrollTop = wrapElement.scrollHeight;
-    }, 100);
-  };
-
   tty.Terminal = _Terminal;
 
 }).call(function() {
