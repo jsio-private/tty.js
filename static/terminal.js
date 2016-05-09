@@ -120,10 +120,11 @@
   };
 
   _Terminal.prototype._calculateRows = function (height) {
-    var charSize = this.measureCharacter();
+    var fontSize = parseFloat(window.getComputedStyle(this.element, null).getPropertyValue('font-size')); // get terminal font size
     var innerHeight = height - 4; // subtract border width
+    var heightScaleCoefficient = 0.74; // empirically identified
 
-    return (innerHeight - 5) / charSize.height | 0;
+    return innerHeight * heightScaleCoefficient / fontSize | 0;
   };
 
   _Terminal.prototype.changeTitle = function(title) {
