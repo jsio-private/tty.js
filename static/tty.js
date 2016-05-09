@@ -9,36 +9,10 @@
    * Elements
    */
 
-  var getQueryParams = function(qs) {
-    var qs = qs.split("+").join(" ");
-
-    var params = {}, tokens,
-      re = /[?&]?([^=]+)=([^&]*)/g;
-
-    while (tokens = re.exec(qs)) {
-      params[decodeURIComponent(tokens[1])]
-        = decodeURIComponent(tokens[2]);
-    }
-
-    return params;
-  };
-
-
-  var query_params = getQueryParams(location.search);
-
-  var document = this.document
+  var query_params = getQueryParams(location.search)
+    , document = this.document
     , window = this
-    , root
-    , body
-    , h1
-    , open;
-
-  /**
-   * Helpers
-   */
-
-  var EventEmitter = Terminal.EventEmitter
-    , inherits = Terminal.inherits
+    , EventEmitter = Terminal.EventEmitter
     , on = Terminal.on
     , off = Terminal.off
     , cancel = Terminal.cancel;
@@ -54,13 +28,21 @@
    */
 
   tty.socket;
-  tty.terms;
-  tty.elements;
+  tty.terms = {};
 
   /**
    * Open
    */
   tty.open = function() {
+    tty.openSocket();
+    tty.handleSocketEvents();
+    tty.setProcessNames();
+
+    tty.emit('load');
+    tty.emit('open');
+  };
+
+  tty.openSocket = function () {
     if (document.location.pathname) {
       var base = document.location.pathname;
       if (base[0] == "/"){
@@ -70,9 +52,9 @@
         base = base.slice(0, base.length - 1);
       }
       if (base){
-        resource = base + '/socket.io';
+        var resource = base + '/socket.io';
       } else{
-        resource = 'socket.io';
+        var resource = 'socket.io';
       }
       var queries = []
       if (query_params.uid){
@@ -81,28 +63,16 @@
       if (query_params.script){
         queries.push("script=" + query_params.script);
       }
-      query = queries.join("&");
+      var query = queries.join("&");
       tty.socket = io.connect(null, { resource : resource,
         query : query
       });
     } else {
       tty.socket = io.connect();
     }
+  };
 
-    tty.terms = {};
-
-    tty.elements = {
-      root: document.documentElement,
-      body: document.body,
-      h1: document.getElementsByTagName('h1')[0],
-      open: document.getElementById('open'),
-    };
-
-    root = tty.elements.root;
-    body = tty.elements.body;
-    h1 = tty.elements.h1;
-    open = tty.elements.open;
-
+  tty.handleSocketEvents = function () {
     tty.socket.on('connect', function() {
       tty.reset();
       tty.emit('connect');
@@ -117,7 +87,9 @@
       if (!tty.terms[id]) return;
       tty.terms[id]._destroy();
     });
+  };
 
+  tty.setProcessNames = function () {
     // We would need to poll the os on the serverside
     // anyway. there's really no clean way to do this.
     // This is just easier to do on the
@@ -129,9 +101,6 @@
         tty.terms[i].pollProcessName();
       }
     }, 2 * 1000);
-
-    tty.emit('load');
-    tty.emit('open');
   };
 
   /**
