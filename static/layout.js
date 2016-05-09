@@ -142,6 +142,12 @@
 
     terminal.on('destroy', function () {
       self.tty.unregisterTerminal(terminal);
+
+      if (self.activeComponent == container.parent) {
+        self.nextPane();
+      } else {
+        self.activeComponent.container.terminal.focus();
+      }
     });
   };
 
@@ -451,6 +457,10 @@
           return;
         }
         i++;
+      }
+
+      if (components.length) {
+        components[0].container.terminal.focus();
       }
     }
   };
