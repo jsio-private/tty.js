@@ -1,7 +1,7 @@
 .modal
   display: none
   position: fixed
-  z-index: 1
+  z-index: 1000
   left: 0
   top: 0
   width: 100%
@@ -9,21 +9,21 @@
   overflow: auto
 
   .modal-content
-    background-color: #fefefe
+    background-color: color-gray-light
     margin: 15% auto
     padding: 20px
-    border: 1px solid #222
+    border: 1px solid color-gray-dark
     width: 40%
-    color: #222
+    color: color-gray-dark
 
     .close
-      color: #888
+      color: color-gray
       float: right
       font-weight: bold
 
       &:hover,
       &:focus
-        color: #222
+        color: color-gray-dark
         text-decoration: none
         cursor: pointer
 
