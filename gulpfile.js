@@ -3,6 +3,8 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 var cleanCSS = require('gulp-clean-css');
+var stylus = require('gulp-stylus');
+var nib = require('nib');
 
 var scripts = [
   'node_modules/socket.io-client/dist/socket.io.js',
@@ -20,9 +22,7 @@ var scripts = [
 ];
 
 var styles = [
-  'assets/css/style.css',
-  'node_modules/golden-layout/src/css/goldenlayout-base.css',
-  'node_modules/golden-layout/src/css/goldenlayout-dark-theme.css'
+  'assets/styl/app.styl'
 ];
 
 gulp.task('scripts', function() {
@@ -34,10 +34,13 @@ gulp.task('scripts', function() {
     .pipe(gulp.dest('./static/build/'));
 });
 
-gulp.task('styles', function() {
+gulp.task('styles', function () {
   return gulp.src(styles)
     .pipe(sourcemaps.init())
-    .pipe(concat('app.css'))
+    .pipe(stylus({
+      'include css': true,
+      'use': nib()
+    }))
     .pipe(cleanCSS())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./static/build/'));
