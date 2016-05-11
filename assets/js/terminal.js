@@ -6,7 +6,7 @@
     , BaseTerminal = Terminal
     , on = BaseTerminal.on;
 
-  var _Terminal = function (socket) {
+  var _Terminal = function (socket, options) {
     var self = this;
 
     self.socket = socket;
@@ -16,6 +16,7 @@
 
     BaseTerminal.call(this);
 
+    self._restoreOptions(options);
     self.open();
     self.hookKeys();
   };
@@ -26,6 +27,13 @@
     this.socket.emit('data', this.id, data);
   };
 
+  _Terminal.prototype._write = _Terminal.prototype.write;
+  _Terminal.prototype.write = function(data) {
+    var ret = this._write(data);
+    this.emit('write');
+    return ret;
+  };
+
   _Terminal.prototype._open = _Terminal.prototype.open;
   _Terminal.prototype.open = function() {
     this.wrapElement = document.createElement('div');
@@ -34,11 +42,11 @@
     return this._open(this.wrapElement);
   };
 
-  _Terminal.prototype.connect = function(state) {
+  _Terminal.prototype.connect = function() {
     var self = this;
 
-    if ('id' in state) {
-      self._syncTerminalData(state);
+    if (this.id) {
+      this.emit('connect');
     } else {
       self.socket.emit('create', self.cols, self.rows, function(err, data) {
         if (err) return self.destroy();
@@ -52,6 +60,22 @@
     this.id = data.id;
     this.setProcessName(data.process);
     this.emit('connect');
+  };
+
+  _Terminal.prototype._restoreOptions = function(options) {
+    if (options) {
+      var self = this;
+
+      each(keys(options), function (key) {
+        if (_Terminal.stateFields.indexOf(key) > -1) {
+          if (key == 'process') {
+            self.setProcessName(options[key]);
+          } else {
+            self[key] = options[key];
+          }
+        }
+      });
+    }
   };
 
   _Terminal.prototype.hookKeys = function() {
@@ -182,6 +206,25 @@
       this.emit('process', name);
     }
   };
+
+  _Terminal.stateFields = [
+    'id',
+    'pty',
+    'process',
+    'lines',
+    'children',
+    'x',
+    'y',
+    'ydisp',
+    'ybase',
+    'cursorState',
+    'cursorHidden',
+    'state',
+    'scrollTop',
+    'scrollBottom',
+    'cols',
+    'rows'
+  ];
 
   tty.Terminal = _Terminal;
 
