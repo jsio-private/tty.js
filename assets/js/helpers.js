@@ -10,6 +10,24 @@ function indexOf(obj, el) {
   return -1;
 }
 
+function each(obj, iter, con) {
+  if (obj.forEach) return obj.forEach(iter, con);
+  for (var i = 0; i < obj.length; i++) {
+    iter.call(con, obj[i], i, obj);
+  }
+}
+
+function keys(obj) {
+  if (Object.keys) return Object.keys(obj);
+  var key, keys = [];
+  for (key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
 function splice(obj, el) {
   var i = indexOf(obj, el);
   if (~i) obj.splice(i, 1);

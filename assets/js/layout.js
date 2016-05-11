@@ -80,10 +80,11 @@
     var self = this;
 
     self.layout.registerComponent('bash', function(container, componentState){
-      var terminal = new tty.Terminal(tty.socket);
+      var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
+      var terminal = new tty.Terminal(tty.socket, terminalOptions);
 
-      self._bindTerminalEvents(terminal, container, componentState);
-      terminal.connect(componentState);
+      self._bindTerminalEvents(terminal, container);
+      terminal.connect();
 
       container.getElement().get(0).appendChild(terminal.getElement());
       container.terminal = terminal;
@@ -105,18 +106,11 @@
     });
   };
 
-  Layout.prototype._bindTerminalEvents = function (terminal, container, componentState) {
+  Layout.prototype._bindTerminalEvents = function (terminal, container) {
     var self = this;
 
     terminal.on('connect', function () {
       self.tty.registerTerminal(terminal);
-
-      container.setState({
-        'id': terminal.id,
-        'pty': terminal.pty,
-        'process': terminal.process
-      });
-
       terminal.resize(container.width, container.height);
     });
 
@@ -148,6 +142,26 @@
       } else {
         self.activeComponent.container.terminal.focus();
       }
+    });
+
+    terminal.on('write', function () {
+      self._saveContainerState(container, terminal);
+    });
+
+    terminal.on('resize', function () {
+      self._saveContainerState(container, terminal);
+    });
+  };
+
+  Layout.prototype._saveContainerState = function (container, terminal) {
+    var options = {};
+
+    each(this.tty.Terminal.stateFields, function (key) {
+      options[key] = terminal[key];
+    });
+
+    container.setState({
+      terminalOptions: options
     });
   };
 
