@@ -98,7 +98,7 @@
         }
       });
       container.on('resize', function () {
-        terminal.resize(container.width, container.height);
+        terminal.changeDimensions(container.width, container.height);
       });
       container._element.on('click', function () {
         terminal.focus();
@@ -111,7 +111,7 @@
 
     terminal.on('connect', function () {
       self.tty.registerTerminal(terminal);
-      terminal.resize(container.width, container.height);
+      terminal.changeDimensions(container.width, container.height);
     });
 
     terminal.on('focus', function () {

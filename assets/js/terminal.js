@@ -47,6 +47,7 @@
 
     if (this.id) {
       this.emit('connect');
+      this.scroll();
     } else {
       self.socket.emit('create', self.cols, self.rows, function(err, data) {
         if (err) return self.destroy();
@@ -96,8 +97,7 @@
     this.emit('focus');
   };
 
-  _Terminal.prototype._resize = _Terminal.prototype.resize;
-  _Terminal.prototype.resize = function (width, height) {
+  _Terminal.prototype.changeDimensions = function (width, height) {
     var cols
       , rows;
 
@@ -111,6 +111,11 @@
       return;
     }
 
+    this.resize(cols, rows);
+  };
+
+  _Terminal.prototype._resize = _Terminal.prototype.resize;
+  _Terminal.prototype.resize = function (cols, rows) {
     this.socket.emit('resize', this.id, cols, rows);
     this._resize(cols, rows);
     this.emit('resize', cols, rows);
@@ -207,7 +212,12 @@
     }
   };
 
+  _Terminal.prototype._scroll = _Terminal.prototype.scroll;
   _Terminal.prototype.scroll = function() {
+    if (!this.nativeScroll) {
+      return this._scroll();
+    }
+
     var wrapElement = this.wrapElement;
 
     setTimeout(function () {
@@ -225,13 +235,12 @@
     'y',
     'ydisp',
     'ybase',
-    'cursorState',
-    'cursorHidden',
-    'state',
     'scrollTop',
     'scrollBottom',
     'cols',
-    'rows'
+    'rows',
+    'nativeScroll',
+    'normal'
   ];
 
   tty.Terminal = _Terminal;
