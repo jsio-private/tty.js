@@ -47,6 +47,12 @@
 
     if (this.id) {
       this.emit('connect');
+
+      if (this.normal) {
+        this.reset();
+        this.showCursor();
+      }
+
       this.scroll();
     } else {
       self.socket.emit('create', self.cols, self.rows, function(err, data) {
