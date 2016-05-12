@@ -31,6 +31,9 @@
   _Terminal.prototype.write = function(data) {
     var ret = this._write(data);
     this.emit('write');
+    if (this.nativeScroll) {
+      this.scroll();
+    }
     return ret;
   };
 
