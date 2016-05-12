@@ -485,26 +485,92 @@
     return components;
   };
 
-  Layout.prototype.nextPane = function () {
+  var focusComponent = function (component) {
+    component.container.terminal.focus();
+  };
+
+  var mod = function(n1, n2) {
+    return ((n1 % n2) + n2) % n2;
+  };
+
+  var getNextLmItem = function(item, dir) {
+    var parent = item.parent();
+
+    var favorClass, otherClass;
+    if (dir === 'left' || dir === 'right') {
+      favorClass = 'lm_row';
+      otherClass = 'lm_column';
+    } else {
+      favorClass = 'lm_column';
+      otherClass = 'lm_row';
+    }
+
+    if (parent.hasClass(otherClass)) {
+      if (!parent.hasClass('lm_item')) {
+        return item;
+      }
+      return getNextLmItem(parent, dir);
+    }
+
+    if (parent.hasClass(favorClass)) {
+      var siblings = parent.children('.lm_item');
+      var selfIndex = siblings.index(item);
+      var intDir = dir === 'left' || 'up' ? -1 : 1;
+      var nextIndex = mod(selfIndex + intDir, siblings.length);
+      return $(siblings[nextIndex]);
+    }
+
+    if (!parent.hasClass('lm_item')) {
+      return item;
+    }
+
+    console.error(item, dir);
+    throw new Error('Unknown parent item');
+  };
+
+  var getContainerFromLmItem = function(item) {
+    if (item.hasClass('lm_stack')) {
+      return item.find('.lm_item_container');
+    }
+
+    var childItems = item.find('.lm_item');
+    return getContainerFromLmItem(childItems.first());
+  };
+
+  Layout.prototype.nextPane = function (dir) {
     var activeTab = this.getActiveTab();
 
-    if (activeTab) {
-      var components = this.getItemComponents(activeTab);
-      var i = 0;
+    if (!activeTab) {
+      return;
+    }
 
-      while (i < components.length) {
-        if (components[i] == this.activeComponent) {
-          var next = (i == components.length - 1) ? components[0] : components[i+1];
-          next.container.terminal.focus();
-          return;
-        }
-        i++;
-      }
+    var components = this.getItemComponents(activeTab);
+    if (components.length === 0) {
+      return;
+    }
+    if (components.length === 1) {
+      return focusComponent(components[0]);
+    }
 
-      if (components.length) {
-        components[0].container.terminal.focus();
+    var parentStack = this.activeComponent.element.closest('.lm_stack');
+    var nextLmItem = getNextLmItem(parentStack, dir);
+    var nextContainer = getContainerFromLmItem(nextLmItem);
+
+    var nextComponent;
+    for (var i = 0; i < components.length; i++) {
+      var component = components[i];
+      if (component.element.is(nextContainer)) {
+        nextComponent = component;
+        break;
       }
     }
+
+    if (!nextComponent) {
+      console.error(nextContainer, components);
+      throw new Error('No next component');
+    }
+
+    return focusComponent(nextComponent);
   };
 
   Layout.prototype.init = function () {

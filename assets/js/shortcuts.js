@@ -9,28 +9,30 @@
                         <strong>Available shortcuts:</strong> \
                         <ul>\
                           <li>create tab : <span>alt + shift + c</span></li>\
-                          <li>next tab : <span>alt + shift + right arrow</span></li>\
-                          <li>previous tab : <span>alt + shift + left arrow</span></li>\
+                          <li>next tab : <span>alt + shift + q</span></li>\
+                          <li>previous tab : <span>alt + shift + tab</span></li>\
                           <li>split pane vertically : <span>alt + shift + v</span></li>\
                           <li>split pane horizontally : <span>alt + shift + h</span></li>\
-                          <li>switch pane : <span>alt + shift + down arrow</span></li>\
+                          <li>switch pane : <span>alt + shift + arrow</span></li>\
                         </ul>\
                       </div>";
 
   Terminal.prototype._keyDown = Terminal.prototype.keyDown;
 
   Terminal.prototype.keyDown = function(ev) {
-    this.bindShortcuts(ev);
+    if (this.bindShortcuts(ev) === false) {
+      return;
+    }
     return this._keyDown(ev);
   };
 
   Terminal.prototype.bindShortcuts = function (ev) {
     if (ev.altKey && ev.shiftKey) {
       switch (ev.keyCode) {
-        case 37: // left arrow
+        case 9: // tab
           tty.layout.focusPreviousTab();
           return cancel(ev);
-        case 39: // right arrow
+        case 81: // q
           tty.layout.focusNextTab();
           return cancel(ev);
         case 67: // c
@@ -42,8 +44,17 @@
         case 86: // v
           tty.layout.splitActiveVertical();
           return cancel(ev);
-        case 40: // down arrow
-          tty.layout.nextPane();
+        case 37: // left arrow
+          tty.layout.nextPane('left');
+          return cancel(ev);
+        case 39:
+          tty.layout.nextPane('right');
+          return cancel(ev);
+        case 38:
+          tty.layout.nextPane('up');
+          return cancel(ev);
+        case 40:
+          tty.layout.nextPane('down');
           return cancel(ev);
         case 191: // forward slash
           if (!shortcutHelpModal) {
