@@ -65,6 +65,7 @@
 
     self.tty = tty;
     self.activeComponent = null;
+    self.terminalOptionsLimit = 10000;
   };
 
   Layout.prototype.watchStateChange = function () {
@@ -157,12 +158,39 @@
     var options = {};
 
     each(this.tty.Terminal.stateFields, function (key) {
-      options[key] = terminal[key];
+      if ($.isArray(terminal[key])) {
+        options[key] = $.extend(true, [], terminal[key]);
+      } else if (typeof terminal[key] == 'object' && terminal[key]) {
+        options[key] = $.extend(true, {}, terminal[key]);
+      } else {
+        options[key] = terminal[key];
+      }
     });
 
     container.setState({
-      terminalOptions: options
+      terminalOptions: this._limitStateOptions(options)
     });
+  };
+
+  Layout.prototype._limitStateOptions = function (options) {
+    if (options['lines'].length > this.terminalOptionsLimit) {
+      options['lines'] = options['lines'].splice(options['lines'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
+    }
+
+    if (options['children'].length > this.terminalOptionsLimit) {
+      options['children'] = options['children'].splice(options['children'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
+    }
+
+    if (options['rows'] > this.terminalOptionsLimit) {
+      options['rows'] = this.terminalOptionsLimit;
+      options['scrollBottom'] = options['rows'] - 1;
+    }
+
+    if (options['y'] > this.terminalOptionsLimit) {
+      options['y'] = this.terminalOptionsLimit - 1;
+    }
+
+    return options;
   };
 
   /**
