@@ -103,6 +103,7 @@
   _Terminal.prototype.focus = function () {
     this.changeTitle(this.title);
     this._focus();
+    this.refresh(0, this.rows - 1);
     this.emit('focus');
   };
 

@@ -139,9 +139,9 @@
       self.tty.unregisterTerminal(terminal);
 
       if (self.activeComponent == container.parent) {
-        self.nextPane();
+        self.nextPane('down');
       } else {
-        self.activeComponent.container.terminal.focus();
+        focusComponent(self.activeComponent);
       }
     });
 
