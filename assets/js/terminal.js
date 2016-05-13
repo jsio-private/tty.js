@@ -101,9 +101,11 @@
 
   _Terminal.prototype._focus = _Terminal.prototype.focus;
   _Terminal.prototype.focus = function () {
+    if (BaseTerminal.focus === this) return;
+
     this.changeTitle(this.title);
     this._focus();
-    this.refresh(0, this.rows - 1);
+    this.element.focus();
     this.emit('focus');
   };
 
