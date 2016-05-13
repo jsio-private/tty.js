@@ -152,6 +152,10 @@
     terminal.on('resize', function () {
       self._saveContainerState(container, terminal);
     });
+
+    terminal.on('process', function () {
+      container.setTitle(terminal.process);
+    });
   };
 
   Layout.prototype._saveContainerState = function (container, terminal) {
