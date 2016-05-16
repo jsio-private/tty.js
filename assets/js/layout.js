@@ -146,16 +146,36 @@
     });
 
     terminal.on('write', function () {
-      self._saveContainerState(container, terminal);
+      self._scheduleForSavingState(container, terminal);
     });
 
     terminal.on('resize', function () {
-      self._saveContainerState(container, terminal);
+      self._scheduleForSavingState(container, terminal);
     });
 
     terminal.on('process', function () {
       container.setTitle(terminal.process);
     });
+  };
+
+  Layout.prototype._scheduleForSavingState = function (container, terminal) {
+    if (typeof container.schedulerCounter === 'undefined') {
+      container.schedulerCounter = 0;
+    }
+
+    container.schedulerCounter++;
+
+    var self = this;
+    var count = container.schedulerCounter;
+
+    // save state if there are no new schedules for more then 3 seconds
+    // (process only the newest one)
+    setTimeout(function () {
+      if (container.schedulerCounter == count) {
+        self._saveContainerState(container, terminal);
+        container.schedulerCounter = 0;
+      }
+    }, 3000);
   };
 
   Layout.prototype._saveContainerState = function (container, terminal) {
