@@ -167,17 +167,22 @@
 
     container.schedulerCounter++;
 
-    var self = this;
-    var count = container.schedulerCounter;
+    // save state if there are no new schedules (activity) for more then 1 second
+    // or every 100th schedule
+    if (container.schedulerCounter > 100) {
+      container.schedulerCounter = 0;
+      self._saveContainerState(container, terminal);
+    } else {
+      var self = this;
+      var count = container.schedulerCounter;
 
-    // save state if there are no new schedules for more then 3 seconds
-    // (process only the newest one)
-    setTimeout(function () {
-      if (container.schedulerCounter == count) {
-        self._saveContainerState(container, terminal);
-        container.schedulerCounter = 0;
-      }
-    }, 3000);
+      setTimeout(function () {
+        if (container.schedulerCounter == count) {
+          self._saveContainerState(container, terminal);
+          container.schedulerCounter = 0;
+        }
+      }, 1000);
+    }
   };
 
   Layout.prototype._saveContainerState = function (container, terminal) {
