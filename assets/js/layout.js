@@ -91,7 +91,9 @@
       container.terminal = terminal;
 
       container.on('show', function () {
-        terminal.focus();
+        setTimeout(function () {
+          terminal.focus();
+        }, 100);
 
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;
