@@ -14,7 +14,7 @@
     self.wrapElement;
     self.process;
 
-    BaseTerminal.call(this);
+    BaseTerminal.call(this, {nativeScroll: false});
 
     self._restoreOptions(options);
     self.open();
@@ -41,6 +41,10 @@
   _Terminal.prototype.open = function() {
     this.wrapElement = document.createElement('div');
     this.wrapElement.className = 'window';
+
+    if (!this.nativeScroll) {
+      this.wrapElement.style.overflowY = "hidden";
+    }
 
     return this._open(this.wrapElement);
   };
@@ -101,8 +105,12 @@
 
   _Terminal.prototype._focus = _Terminal.prototype.focus;
   _Terminal.prototype.focus = function () {
-    this.changeTitle(this.title);
+    var prevFocus = BaseTerminal.focus;
     this._focus();
+    if (prevFocus === this) return;
+
+    this.changeTitle(this.title);
+    this.element.focus();
     this.emit('focus');
   };
 

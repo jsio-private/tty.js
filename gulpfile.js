@@ -47,7 +47,7 @@ gulp.task('styles', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('assets/js/**', ['scripts']);
+  gulp.watch(scripts, ['scripts']);
   gulp.watch('assets/styl/**', ['styles']);
 });
 

@@ -65,6 +65,7 @@
 
     self.tty = tty;
     self.activeComponent = null;
+    self.terminalOptionsLimit = 10000;
   };
 
   Layout.prototype.watchStateChange = function () {
@@ -90,18 +91,21 @@
       container.terminal = terminal;
 
       container.on('show', function () {
-        terminal.focus();
-
-        if (!container.dropControlProceeded) {
-          container.dropControlProceeded = true;
-          self._controlDrop(container);
-        }
+        setTimeout(function () {
+          terminal.focus();
+        }, 100);
       });
       container.on('resize', function () {
         terminal.changeDimensions(container.width, container.height);
       });
       container._element.on('click', function () {
         terminal.focus();
+      });
+      container.on('open', function () {
+        if (!container.dropControlProceeded) {
+          container.dropControlProceeded = true;
+          self._controlDrop(container);
+        }
       });
     });
   };
@@ -138,31 +142,87 @@
       self.tty.unregisterTerminal(terminal);
 
       if (self.activeComponent == container.parent) {
-        self.nextPane();
+        self.nextPane('down');
       } else {
-        self.activeComponent.container.terminal.focus();
+        focusComponent(self.activeComponent);
       }
     });
 
     terminal.on('write', function () {
-      self._saveContainerState(container, terminal);
+      self._scheduleForSavingState(container, terminal);
     });
 
     terminal.on('resize', function () {
-      self._saveContainerState(container, terminal);
+      self._scheduleForSavingState(container, terminal);
     });
+
+    terminal.on('process', function () {
+      container.setTitle(terminal.process);
+    });
+  };
+
+  Layout.prototype._scheduleForSavingState = function (container, terminal) {
+    if (typeof container.schedulerCounter === 'undefined') {
+      container.schedulerCounter = 0;
+    }
+
+    container.schedulerCounter++;
+
+    // save state if there are no new schedules (activity) for more then 1 second
+    // or every 100th schedule
+    if (container.schedulerCounter > 100) {
+      container.schedulerCounter = 0;
+      self._saveContainerState(container, terminal);
+    } else {
+      var self = this;
+      var count = container.schedulerCounter;
+
+      setTimeout(function () {
+        if (container.schedulerCounter == count) {
+          self._saveContainerState(container, terminal);
+          container.schedulerCounter = 0;
+        }
+      }, 1000);
+    }
   };
 
   Layout.prototype._saveContainerState = function (container, terminal) {
     var options = {};
 
     each(this.tty.Terminal.stateFields, function (key) {
-      options[key] = terminal[key];
+      if ($.isArray(terminal[key])) {
+        options[key] = $.extend(true, [], terminal[key]);
+      } else if (typeof terminal[key] == 'object' && terminal[key]) {
+        options[key] = $.extend(true, {}, terminal[key]);
+      } else {
+        options[key] = terminal[key];
+      }
     });
 
     container.setState({
-      terminalOptions: options
+      terminalOptions: this._limitStateOptions(options)
     });
+  };
+
+  Layout.prototype._limitStateOptions = function (options) {
+    if (options['lines'].length > this.terminalOptionsLimit) {
+      options['lines'] = options['lines'].splice(options['lines'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
+    }
+
+    if (options['children'].length > this.terminalOptionsLimit) {
+      options['children'] = options['children'].splice(options['children'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
+    }
+
+    if (options['rows'] > this.terminalOptionsLimit) {
+      options['rows'] = this.terminalOptionsLimit;
+      options['scrollBottom'] = options['rows'] - 1;
+    }
+
+    if (options['y'] > this.terminalOptionsLimit) {
+      options['y'] = this.terminalOptionsLimit - 1;
+    }
+
+    return options;
   };
 
   /**
@@ -192,6 +252,16 @@
         delete stack._contentAreaDimensions.top;
         delete stack._contentAreaDimensions.bottom;
         return area;
+      };
+
+      // fix GL issue with dropping tab nowhere
+      var originalOnDrop = stack._$onDrop;
+      stack._$onDrop = function (contentItem) {
+        if (!this._dropSegment) {
+          this._dropSegment = 'header';
+        }
+
+        return originalOnDrop.call(stack, contentItem);
       };
     }
   };
