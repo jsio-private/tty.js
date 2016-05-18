@@ -94,17 +94,18 @@
         setTimeout(function () {
           terminal.focus();
         }, 100);
-
-        if (!container.dropControlProceeded) {
-          container.dropControlProceeded = true;
-          self._controlDrop(container);
-        }
       });
       container.on('resize', function () {
         terminal.changeDimensions(container.width, container.height);
       });
       container._element.on('click', function () {
         terminal.focus();
+      });
+      container.on('open', function () {
+        if (!container.dropControlProceeded) {
+          container.dropControlProceeded = true;
+          self._controlDrop(container);
+        }
       });
     });
   };
@@ -251,6 +252,16 @@
         delete stack._contentAreaDimensions.top;
         delete stack._contentAreaDimensions.bottom;
         return area;
+      };
+
+      // fix GL issue with dropping tab nowhere
+      var originalOnDrop = stack._$onDrop;
+      stack._$onDrop = function (contentItem) {
+        if (!this._dropSegment) {
+          this._dropSegment = 'header';
+        }
+
+        return originalOnDrop.call(stack, contentItem);
       };
     }
   };
