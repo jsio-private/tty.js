@@ -14,7 +14,7 @@
     self.wrapElement;
     self.process;
 
-    BaseTerminal.call(this);
+    BaseTerminal.call(this, {nativeScroll: false});
 
     self._restoreOptions(options);
     self.open();
@@ -41,6 +41,10 @@
   _Terminal.prototype.open = function() {
     this.wrapElement = document.createElement('div');
     this.wrapElement.className = 'window';
+
+    if (!this.nativeScroll) {
+      this.wrapElement.style.overflowY = "hidden";
+    }
 
     return this._open(this.wrapElement);
   };
