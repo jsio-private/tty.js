@@ -85,7 +85,7 @@
 
     tty.socket.on('kill', function(id) {
       if (!tty.terms[id]) return;
-      tty.terms[id]._destroy();
+      tty.terms[id].destroy();
     });
   };
 
@@ -126,6 +126,10 @@
     if (tty.terms[term.id]) {
       delete tty.terms[term.id];
     }
+  };
+
+  tty.hasTerminals = function () {
+    return !$.isEmptyObject(tty.terms);
   };
 
   /**

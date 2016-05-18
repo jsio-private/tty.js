@@ -141,11 +141,20 @@
     terminal.on('destroy', function () {
       self.tty.unregisterTerminal(terminal);
 
+      if (!self.tty.hasTerminals()) {
+        self.addNewTab();
+      }
+
       if (self.activeComponent == container.parent) {
-        self.nextPane('down');
+        if (!self.nextPane('down')) {
+          self.focusNextTab();
+        }
       } else {
         focusComponent(self.activeComponent);
       }
+
+      container.close();
+      self._removeRedundantStacks();
     });
 
     terminal.on('write', function () {
@@ -528,7 +537,12 @@
   };
 
   var focusComponent = function (component) {
+    if (!component) {
+      return;
+    }
+
     component.container.terminal.focus();
+    return true;
   };
 
   var mod = function(n1, n2) {
