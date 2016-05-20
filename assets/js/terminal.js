@@ -89,6 +89,7 @@
   };
 
   _Terminal.prototype.focus = function () {
+    if (this.term) return;
     this.changeTitle(this.title);
     this.term.focus();
     this.emit('focus');
@@ -103,11 +104,12 @@
     if (this.destroyed) {
       return;
     }
-
     this.destroyed = true;
-    this.wrapElement.parentNode.removeChild(this.wrapElement);
-    this.socket.emit('kill', this.id);
 
+    this.io.pop();
+    this.term.uninstallKeyboard();
+
+    this.socket.emit('kill', this.id);
     this.emit('destroy');
   };
 

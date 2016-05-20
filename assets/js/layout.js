@@ -77,30 +77,44 @@
   };
 
   Layout.prototype.registerComponents = function () {
-    var tty = this.tty;
     var self = this;
 
     self.layout.registerComponent('bash', function(container, componentState){
-      var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
-      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), terminalOptions);
-
-      self._bindTerminalEvents(terminal, container);
-      container.terminal = terminal;
-
       container.on('show', function () {
-        terminal.connect();
-        terminal.focus();
+        self._focusContainer(container);
       });
       container._element.on('click', function () {
-        terminal.focus();
+        self._focusContainer(container);
       });
       container.on('open', function () {
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;
           self._controlDrop(container);
         }
+
+        self._createTerminal(container, componentState);
       });
     });
+  };
+
+  Layout.prototype._createTerminal = function (container, componentState) {
+    var self = this;
+    var tty = this.tty;
+
+    // leave time for initialisation
+    setTimeout(function () {
+      var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
+      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), terminalOptions);
+
+      container.terminal = terminal;
+      self._bindTerminalEvents(terminal, container);
+      terminal.connect();
+    }, 50);
+  };
+
+  Layout.prototype._focusContainer = function (container) {
+    if (!container.terminal) return;
+    container.terminal.focus();
   };
 
   Layout.prototype._bindTerminalEvents = function (terminal, container) {
@@ -627,7 +641,7 @@
       var layout = new Layout(state, self.tty);
       layout.init();
 
-      self.tty.Controller.layout = layout;
+      self.tty.layout = layout;
     });
   });
 }).call(function() {
