@@ -33,6 +33,9 @@
   _Terminal.prototype.connect = function() {
     var self = this;
 
+    if (self.connected) return;
+    self.connected = true;
+
     self.term.onTerminalReady = function() {
       self.io = self.term.io.push();
       self.term.installKeyboard();

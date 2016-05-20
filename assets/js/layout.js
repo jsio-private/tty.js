@@ -87,17 +87,14 @@
       self._bindTerminalEvents(terminal, container);
       container.terminal = terminal;
 
-      //container.on('show', function () {
-      //  setTimeout(function () {
-      //    terminal.focus();
-      //  }, 100);
-      //});
-      //container._element.on('click', function () {
-      //  terminal.focus();
-      //});
-      container.on('open', function () {
+      container.on('show', function () {
         terminal.connect();
-
+        terminal.focus();
+      });
+      container._element.on('click', function () {
+        terminal.focus();
+      });
+      container.on('open', function () {
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;
           self._controlDrop(container);
