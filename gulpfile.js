@@ -14,10 +14,10 @@ var scripts = [
   'assets/js/hterm_all.js',
   'assets/js/helpers.js',
   'assets/js/event-emitter.js',
+  'assets/js/shortcuts.js',
   'assets/js/tty.js',
   'assets/js/terminal.js',
-  'assets/js/layout.js',
-  //'assets/js/shortcuts.js'
+  'assets/js/layout.js'
 ];
 
 var styles = [
