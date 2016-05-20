@@ -11,14 +11,13 @@ var scripts = [
   'node_modules/jquery/dist/jquery.js',
   'node_modules/golden-layout/dist/goldenlayout.js',
   'assets/js/modal.js',
-  'node_modules/term.js/src/term.js',
-  'assets/js/term.js',
-  'assets/js/options.js',
+  'assets/js/hterm_all.js',
   'assets/js/helpers.js',
+  'assets/js/event-emitter.js',
   'assets/js/tty.js',
   'assets/js/terminal.js',
   'assets/js/layout.js',
-  'assets/js/shortcuts.js'
+  //'assets/js/shortcuts.js'
 ];
 
 var styles = [

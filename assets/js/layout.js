@@ -72,7 +72,7 @@
     var self = this;
 
     this.layout.on('stateChanged', function(){
-      self.tty.socket.emit('layout state change', JSON.stringify(self.layout.toConfig()));
+      self.tty.Controller.socket.emit('layout state change', JSON.stringify(self.layout.toConfig()));
     });
   };
 
@@ -82,26 +82,22 @@
 
     self.layout.registerComponent('bash', function(container, componentState){
       var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
-      var terminal = new tty.Terminal(tty.socket, terminalOptions);
+      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), terminalOptions);
 
       self._bindTerminalEvents(terminal, container);
-      terminal.connect();
-
-      container.getElement().get(0).appendChild(terminal.getElement());
       container.terminal = terminal;
 
-      container.on('show', function () {
-        setTimeout(function () {
-          terminal.focus();
-        }, 100);
-      });
-      container.on('resize', function () {
-        terminal.changeDimensions(container.width, container.height);
-      });
-      container._element.on('click', function () {
-        terminal.focus();
-      });
+      //container.on('show', function () {
+      //  setTimeout(function () {
+      //    terminal.focus();
+      //  }, 100);
+      //});
+      //container._element.on('click', function () {
+      //  terminal.focus();
+      //});
       container.on('open', function () {
+        terminal.connect();
+
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;
           self._controlDrop(container);
@@ -114,34 +110,17 @@
     var self = this;
 
     terminal.on('connect', function () {
-      self.tty.registerTerminal(terminal);
-      terminal.changeDimensions(container.width, container.height);
+      self.tty.Controller.registerTerminal(terminal);
     });
 
     terminal.on('focus', function () {
       self.activeComponent = container.parent;
     });
 
-    terminal.on('request create', function() {
-      self.addNewTab();
-    });
-
-    terminal.on('request term', function(key) {
-      self.focusTab(key);
-    });
-
-    terminal.on('request term next', function() {
-      self.focusNextTab();
-    });
-
-    terminal.on('request term previous', function() {
-      self.focusPreviousTab();
-    });
-
     terminal.on('destroy', function () {
-      self.tty.unregisterTerminal(terminal);
+      self.tty.Controller.unregisterTerminal(terminal);
 
-      if (!self.tty.hasTerminals()) {
+      if (!self.tty.Controller.hasTerminals()) {
         self.addNewTab();
       }
 
@@ -197,6 +176,7 @@
 
   Layout.prototype._saveContainerState = function (container, terminal) {
     var options = {};
+    return;
 
     each(this.tty.Terminal.stateFields, function (key) {
       if ($.isArray(terminal[key])) {
@@ -640,13 +620,17 @@
 
   var self = this;
 
-  self.tty.on('load', function () {
-    self.tty.socket.on('sync', function(state) {
-      self.tty.reset();
+  lib.init(function() {
+    hterm.defaultStorage = new lib.Storage.Local();
+  });
+
+  self.tty.Controller.on('load', function () {
+    self.tty.Controller.socket.on('sync', function(state) {
+      self.tty.Controller.reset();
       var layout = new Layout(state, self.tty);
       layout.init();
 
-      self.tty.layout = layout;
+      self.tty.Controller.layout = layout;
     });
   });
 }).call(function() {
