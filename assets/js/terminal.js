@@ -17,6 +17,8 @@
     self.parent.appendChild(self.element);
     self.term = new hterm.Terminal();
     self.io;
+
+    self._restoreOptions(options);
   };
 
   inherits(_Terminal, EventEmitter);
@@ -148,6 +150,9 @@
   };
 
   _Terminal.stateFields = [
+    'id',
+    'pty',
+    'process'
   ];
 
   this.tty.Terminal = _Terminal;

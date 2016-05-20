@@ -21,6 +21,7 @@
 
   Controller.socket;
   Controller.terms = {};
+  Controller.buffer = {};
 
   /**
    * Open
@@ -71,7 +72,10 @@
     });
 
     Controller.socket.on('data', function(id, data) {
-      if (!Controller.terms[id]) return;
+      if (!Controller.terms[id]) {
+        Controller.saveToBuffer(id, data);
+        return;
+      }
       Controller.terms[id].write(data);
     });
 
@@ -122,6 +126,25 @@
 
   Controller.hasTerminals = function () {
     return !$.isEmptyObject(Controller.terms);
+  };
+
+  Controller.saveToBuffer = function (id, data) {
+    if (typeof Controller.buffer[id] == 'undefined') {
+      Controller.buffer[id] = [];
+    }
+    Controller.buffer[id].push(data);
+  };
+
+  Controller.pullFromBuffer = function (id) {
+    if (!Controller.terms[id] || !Controller.buffer[id]) return;
+
+    var buffer = Controller.buffer[id];
+    var term = Controller.terms[id];
+
+    while (buffer.length) {
+      var data = buffer.shift();
+      term.write(data);
+    }
   };
 
   /**

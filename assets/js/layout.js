@@ -122,6 +122,7 @@
 
     terminal.on('connect', function () {
       self.tty.Controller.registerTerminal(terminal);
+      self.tty.Controller.pullFromBuffer(terminal.id);
     });
 
     terminal.on('focus', function () {
@@ -187,7 +188,6 @@
 
   Layout.prototype._saveContainerState = function (container, terminal) {
     var options = {};
-    return;
 
     each(this.tty.Terminal.stateFields, function (key) {
       if ($.isArray(terminal[key])) {
@@ -205,23 +205,6 @@
   };
 
   Layout.prototype._limitStateOptions = function (options) {
-    if (options['lines'].length > this.terminalOptionsLimit) {
-      options['lines'] = options['lines'].splice(options['lines'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
-    }
-
-    if (options['children'].length > this.terminalOptionsLimit) {
-      options['children'] = options['children'].splice(options['children'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
-    }
-
-    if (options['rows'] > this.terminalOptionsLimit) {
-      options['rows'] = this.terminalOptionsLimit;
-      options['scrollBottom'] = options['rows'] - 1;
-    }
-
-    if (options['y'] > this.terminalOptionsLimit) {
-      options['y'] = this.terminalOptionsLimit - 1;
-    }
-
     return options;
   };
 
