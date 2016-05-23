@@ -9235,7 +9235,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
       'font-family: monospace;' +
       'font-size: 15px;' +
       'height: 100%;' +
-      'overflow-y: scroll; overflow-x: hidden;' +
+      'overflow-y: auto; overflow-x: hidden;' +
       'white-space: pre;' +
       'width: 100%;' +
       'outline: none !important');
@@ -10303,7 +10303,7 @@ hterm.ScrollPort.prototype.handlePasteTargetTextInput_ = function(e) {
  * Set the vertical scrollbar mode of the ScrollPort.
  */
 hterm.ScrollPort.prototype.setScrollbarVisible = function(state) {
-  this.screen_.style.overflowY = state ? 'scroll' : 'hidden';
+  this.screen_.style.overflowY = state ? 'auto' : 'hidden';
 };
 
 /**
