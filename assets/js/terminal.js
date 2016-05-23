@@ -40,6 +40,16 @@
     term.prefs_.set('pass-ctrl-number', true);
     term.prefs_.set('pass-meta-number', true);
     term.prefs_.set('audible-bell-sound', '');
+    term.prefs_.set('keybindings', {
+      "Ctrl-F" : "PASS",
+      "Ctrl-R" : "PASS",
+      "Ctrl-S" : "PASS",
+      "Ctrl-A" : "PASS",
+      "Meta-F" : "PASS",
+      "Meta-R" : "PASS",
+      "Meta-S" : "PASS",
+      "Meta-A" : "PASS",
+    });
 
     term.onTerminalReady = function() {
       var io = term.io.push();
