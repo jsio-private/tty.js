@@ -83,9 +83,6 @@
       container.on('show', function () {
         self._focusContainer(container);
       });
-      container._element.on('click', function () {
-        self._focusContainer(container);
-      });
       container.on('open', function () {
         if (!container.dropControlProceeded) {
           container.dropControlProceeded = true;

@@ -51,6 +51,13 @@
       "Meta-A" : "PASS",
     });
 
+    term.onFocusChangeOriginal_ = term.onFocusChange_;
+    term.onFocusChange_ = function (focused) {
+      term.onFocusChangeOriginal_(focused);
+      self.changeTitle(self.title);
+      self.emit('focus');
+    };
+
     term.onTerminalReady = function() {
       var io = term.io.push();
       term.installKeyboard();
@@ -123,9 +130,7 @@
 
   _Terminal.prototype.focus = function () {
     if (this.term) return;
-    this.changeTitle(this.title);
     this.term.focus();
-    this.emit('focus');
   };
 
   _Terminal.prototype.resize = function (cols, rows) {
