@@ -15,13 +15,51 @@
     self.element = document.createElement('div');
     self.element.className = 'window';
     self.parent.appendChild(self.element);
-    self.term = new hterm.Terminal();
-    self.io;
 
     self._restoreOptions(options);
+
+    if (!self.term) {
+      self.term = self._createTerm();
+    }
   };
 
   inherits(_Terminal, EventEmitter);
+
+  _Terminal.prototype._createTerm = function() {
+    var term = new hterm.Terminal();
+    var self = this;
+
+    term.prefs_.set('ctrl-c-copy', true);
+    term.prefs_.set('ctrl-v-paste', true);
+    term.prefs_.set('use-default-window-copy', true);
+    term.prefs_.set('cursor-blink', true);
+    term.prefs_.set('use-default-window-copy', true);
+    term.prefs_.set('clear-selection-after-copy', false);
+    term.prefs_.set('font-size', 13);
+    term.prefs_.set('pass-alt-number', true);
+    term.prefs_.set('pass-ctrl-number', true);
+    term.prefs_.set('pass-meta-number', true);
+    term.prefs_.set('audible-bell-sound', '');
+
+    term.onTerminalReady = function() {
+      var io = term.io.push();
+      term.installKeyboard();
+
+      io.onVTKeystroke = function(str) {
+        self.handler(str);
+      };
+
+      io.sendString = function(str) {
+        self.handler(str);
+      };
+
+      io.onTerminalResize = function(columns, rows) {
+        self.resize(columns, rows);
+      };
+    };
+
+    return term;
+  };
 
   _Terminal.prototype.handler = function(data) {
     this.socket.emit('data', this.id, data);
@@ -37,23 +75,6 @@
 
     if (self.connected) return;
     self.connected = true;
-
-    self.term.onTerminalReady = function() {
-      self.io = self.term.io.push();
-      self.term.installKeyboard();
-
-      self.io.onVTKeystroke = function(str) {
-        self.handler(str);
-      };
-
-      self.io.sendString = function(str) {
-        self.handler(str);
-      };
-
-      self.io.onTerminalResize = function(columns, rows) {
-        self.resize(columns, rows);
-      };
-    };
 
     self.term.decorate(self.element);
 
@@ -108,7 +129,7 @@
     }
     this.destroyed = true;
 
-    this.io.pop();
+    this.term.io.pop();
     this.term.uninstallKeyboard();
 
     this.socket.emit('kill', this.id);

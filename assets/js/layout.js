@@ -149,11 +149,11 @@
     });
 
     terminal.on('write', function () {
-      self._scheduleForSavingState(container, terminal);
+      self._scheduleForSavingState(container);
     });
 
     terminal.on('resize', function () {
-      self._scheduleForSavingState(container, terminal);
+      self._scheduleForSavingState(container);
     });
 
     terminal.on('process', function () {
@@ -161,7 +161,7 @@
     });
   };
 
-  Layout.prototype._scheduleForSavingState = function (container, terminal) {
+  Layout.prototype._scheduleForSavingState = function (container) {
     if (typeof container.schedulerCounter === 'undefined') {
       container.schedulerCounter = 0;
     }
@@ -172,22 +172,23 @@
     // or every 100th schedule
     if (container.schedulerCounter > 100) {
       container.schedulerCounter = 0;
-      self._saveContainerState(container, terminal);
+      self._saveContainerState(container);
     } else {
       var self = this;
       var count = container.schedulerCounter;
 
       setTimeout(function () {
         if (container.schedulerCounter == count) {
-          self._saveContainerState(container, terminal);
+          self._saveContainerState(container);
           container.schedulerCounter = 0;
         }
       }, 1000);
     }
   };
 
-  Layout.prototype._saveContainerState = function (container, terminal) {
+  Layout.prototype._saveContainerState = function (container) {
     var options = {};
+    var terminal = container.terminal;
 
     each(this.tty.Terminal.stateFields, function (key) {
       if ($.isArray(terminal[key])) {
