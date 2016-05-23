@@ -54,8 +54,10 @@
     term.onFocusChangeOriginal_ = term.onFocusChange_;
     term.onFocusChange_ = function (focused) {
       term.onFocusChangeOriginal_(focused);
-      self.changeTitle(self.title);
-      self.emit('focus');
+      if (focused) {
+        self.changeTitle(self.title);
+        self.emit('focus');
+      }
     };
 
     term.onTerminalReady = function() {
@@ -129,7 +131,8 @@
   };
 
   _Terminal.prototype.focus = function () {
-    if (this.term) return;
+    if (!this.term) return;
+    this.element.focus();
     this.term.focus();
   };
 
