@@ -81,7 +81,14 @@
 
     self.layout.registerComponent('bash', function(container, componentState){
       container.on('show', function () {
-        self._focusContainer(container);
+        if (container.terminal) {
+          container.terminal.focus();
+        }
+      });
+      container.on('resize', function () {
+        if (container.terminal) {
+          self.reattach(container);
+        }
       });
       container.on('open', function () {
         if (!container.dropControlProceeded) {
@@ -92,6 +99,23 @@
         self._createTerminal(container, componentState);
       });
     });
+  };
+
+  Layout.prototype.reattach = function (container) {
+    if (typeof container.reattachCounter === 'undefined') {
+      container.reattachCounter = 0;
+    }
+
+    container.reattachCounter++;
+    var count = container.reattachCounter;
+
+    // reattach terminals if there are no new state changes for more then 50 ms
+    setTimeout(function () {
+      if (container.reattachCounter == count) {
+        container.terminal.attach();
+        container.reattachCounter = 0;
+      }
+    }, 50);
   };
 
   Layout.prototype._createTerminal = function (container, componentState) {
@@ -107,11 +131,6 @@
       self._bindTerminalEvents(terminal, container);
       terminal.connect();
     }, 50);
-  };
-
-  Layout.prototype._focusContainer = function (container) {
-    if (!container.terminal) return;
-    container.terminal.focus();
   };
 
   Layout.prototype._bindTerminalEvents = function (terminal, container) {

@@ -62,7 +62,6 @@
 
     term.onTerminalReady = function() {
       var io = term.io.push();
-      term.installKeyboard();
 
       io.onVTKeystroke = function(str) {
         self.handler(str);
@@ -95,7 +94,7 @@
     if (self.connected) return;
     self.connected = true;
 
-    self.term.decorate(self.element);
+    self.attach();
 
     if (this.id) {
       this.emit('connect');
@@ -105,6 +104,11 @@
         self._syncTerminalData(data);
       });
     }
+  };
+
+  _Terminal.prototype.attach = function() {
+    this.term.decorate(this.element);
+    this.term.installKeyboard();
   };
 
   _Terminal.prototype._syncTerminalData = function(data) {
