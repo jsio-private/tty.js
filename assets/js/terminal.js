@@ -60,6 +60,8 @@
       }
     };
 
+    term.showOverlay = function () {}; // don't show overlay
+
     term.onTerminalReady = function() {
       var io = term.io.push();
 
