@@ -116,6 +116,7 @@
     terminal.on('connect', function () {
       self.tty.registerTerminal(terminal);
       terminal.changeDimensions(container.width, container.height);
+      self._saveContainerState(container, terminal);
     });
 
     terminal.on('focus', function () {
@@ -157,13 +158,13 @@
       self._removeRedundantStacks();
     });
 
-    terminal.on('write', function () {
-      self._scheduleForSavingState(container, terminal);
-    });
-
-    terminal.on('resize', function () {
-      self._scheduleForSavingState(container, terminal);
-    });
+    //terminal.on('write', function () {
+    //  self._scheduleForSavingState(container, terminal);
+    //});
+    //
+    //terminal.on('resize', function () {
+    //  self._scheduleForSavingState(container, terminal);
+    //});
 
     terminal.on('process', function () {
       container.setTitle(terminal.process);
@@ -214,20 +215,20 @@
   };
 
   Layout.prototype._limitStateOptions = function (options) {
-    if (options['lines'].length > this.terminalOptionsLimit) {
+    if (options['lines'] && options['lines'].length > this.terminalOptionsLimit) {
       options['lines'] = options['lines'].splice(options['lines'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
     }
 
-    if (options['children'].length > this.terminalOptionsLimit) {
+    if (options['children'] && options['children'].length > this.terminalOptionsLimit) {
       options['children'] = options['children'].splice(options['children'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
     }
 
-    if (options['rows'] > this.terminalOptionsLimit) {
+    if (options['rows'] && options['rows'] > this.terminalOptionsLimit) {
       options['rows'] = this.terminalOptionsLimit;
       options['scrollBottom'] = options['rows'] - 1;
     }
 
-    if (options['y'] > this.terminalOptionsLimit) {
+    if (options['y'] && options['y'] > this.terminalOptionsLimit) {
       options['y'] = this.terminalOptionsLimit - 1;
     }
 

@@ -246,18 +246,18 @@
     'id',
     'pty',
     'process',
-    'lines',
-    'children',
-    'x',
-    'y',
-    'ydisp',
-    'ybase',
-    'scrollTop',
-    'scrollBottom',
-    'cols',
-    'rows',
-    'nativeScroll',
-    'normal'
+    //'lines',
+    //'children',
+    //'x',
+    //'y',
+    //'ydisp',
+    //'ybase',
+    //'scrollTop',
+    //'scrollBottom',
+    //'cols',
+    //'rows',
+    //'nativeScroll',
+    //'normal'
   ];
 
   tty.Terminal = _Terminal;
