@@ -63,8 +63,10 @@
       if (query_params.script){
         queries.push("script=" + query_params.script);
       }
+      queries.push("sessionId=" + tty.getSessionId());
+
       var query = queries.join("&");
-      tty.socket = io.connect(null, { resource : resource,
+      tty.socket = io.connect(null, {resource : resource,
         query : query
       });
     } else {
@@ -73,6 +75,10 @@
   };
 
   tty.handleSocketEvents = function () {
+    tty.socket.on('session', function(data) {
+      tty.saveSessionId(data.sessionId);
+    });
+
     tty.socket.on('connect', function() {
       tty.reset();
       tty.emit('connect');
@@ -130,6 +136,19 @@
 
   tty.hasTerminals = function () {
     return !$.isEmptyObject(tty.terms);
+  };
+
+  tty.getSessionId = function () {
+    if (typeof(Storage) !== "undefined" && sessionStorage.sessionId) {
+      return sessionStorage.sessionId;
+    }
+    return null;
+  };
+
+  tty.saveSessionId = function (id) {
+    if (typeof(Storage) !== "undefined") {
+      sessionStorage.sessionId = id;
+    }
   };
 
   /**
