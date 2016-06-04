@@ -64,6 +64,7 @@
         queries.push("script=" + query_params.script);
       }
       queries.push("sessionId=" + tty.getSessionId());
+      queries.push("userAgentId=" + tty.getUserAgentId());
 
       var query = queries.join("&");
       tty.socket = io.connect(null, {resource : resource,
@@ -149,6 +150,19 @@
     if (typeof(Storage) !== "undefined") {
       sessionStorage.sessionId = id;
     }
+  };
+
+  tty.getUserAgentId = function () {
+    if (typeof(Storage) === "undefined") {
+      return null;
+    }
+
+    var id = localStorage.getItem("ttyUserAgentID");
+    if (!id) {
+      id = navigator.userAgent;
+      localStorage.setItem("ttyUserAgentID", id);
+    }
+    return id;
   };
 
   /**
