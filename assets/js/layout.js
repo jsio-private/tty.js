@@ -355,6 +355,7 @@
       if (stack.parent.isRoot) {
         // add "New Tab" control
         self._addNewTabBtn(stack);
+        self._addRefreshBtn(stack);
       } else {
         self._addSplitVerticalBtn(stack);
         self._addSplitHorizontalBtn(stack);
@@ -374,6 +375,19 @@
 
     $addTabBtn.on('click', function () {
       self.newTab(stack);
+    });
+  };
+
+  Layout.prototype._addRefreshBtn = function (stack) {
+    var $btn = $('<li title="Refresh session">↺</li>');
+    var self = this;
+
+    stack.header.controlsContainer.prepend($btn);
+
+    $btn.on('click', function () {
+      if (confirm("Are you sure want to refresh the session?")) {
+        self.tty.clearSession();
+      }
     });
   };
 

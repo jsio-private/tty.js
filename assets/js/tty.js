@@ -152,6 +152,16 @@
     }
   };
 
+  tty.clearSession = function () {
+    tty.socket.emit('destroy session');
+
+    if (typeof(Storage) !== "undefined" && sessionStorage.sessionId) {
+      delete sessionStorage.sessionId;
+    }
+
+    location.reload();
+  };
+
   tty.getUserAgentId = function () {
     if (typeof(Storage) === "undefined") {
       return null;
