@@ -29,6 +29,7 @@
 
   tty.socket;
   tty.terms = {};
+  tty.buffer = {};
 
   /**
    * Open
@@ -77,6 +78,7 @@
 
   tty.handleSocketEvents = function () {
     tty.socket.on('session', function(data) {
+      tty.socket.sessionInitialized = true;
       tty.saveSessionId(data.sessionId);
     });
 
@@ -86,7 +88,10 @@
     });
 
     tty.socket.on('data', function(id, data) {
-      if (!tty.terms[id]) return;
+      if (!tty.terms[id]) {
+        tty.saveToBuffer(id, data);
+        return;
+      }
       tty.terms[id].write(data);
     });
 
@@ -175,6 +180,25 @@
     return id;
   };
 
+  tty.saveToBuffer = function (id, data) {
+    if (typeof tty.buffer[id] == 'undefined') {
+      tty.buffer[id] = [];
+    }
+    tty.buffer[id].push(data);
+  };
+
+  tty.pullFromBuffer = function (id) {
+    if (!tty.terms[id] || !tty.buffer[id]) return;
+
+    var buffer = tty.buffer[id];
+    var term = tty.terms[id];
+
+    while (buffer.length) {
+      var data = buffer.shift();
+      term.write(data);
+    }
+  };
+
   /**
    * Load
    */
@@ -207,3 +231,4 @@
 }).call(function() {
     return this || (typeof window !== 'undefined' ? window : global);
   }());
+

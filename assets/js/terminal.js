@@ -27,6 +27,20 @@
     this.socket.emit('data', this.id, data);
   };
 
+  _Terminal.prototype.touch = function() {
+    var self = this;
+
+    if (self.socket.sessionInitialized) {
+      setTimeout(function () {
+        self.handler(" \b");
+      }, 100);
+    } else {
+      self.socket.on('session', function () {
+        self.handler(" \b");
+      });
+    }
+  };
+
   _Terminal.prototype._write = _Terminal.prototype.write;
   _Terminal.prototype.write = function(data) {
     var ret = this._write(data);
@@ -60,6 +74,7 @@
         this.showCursor();
       }
 
+      this.touch();
       this.scroll();
     } else {
       self.socket.emit('create', self.cols, self.rows, function(err, data) {

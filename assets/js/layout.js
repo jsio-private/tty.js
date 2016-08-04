@@ -117,6 +117,7 @@
       self.tty.registerTerminal(terminal);
       terminal.changeDimensions(container.width, container.height);
       self._saveContainerState(container, terminal);
+      self.tty.pullFromBuffer(terminal.id);
     });
 
     terminal.on('focus', function () {
