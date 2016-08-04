@@ -1,4 +1,7 @@
 ;(function() {
+  var componentName = 'bash';
+  var componentTitle = 'bash';
+
   var ConfigProvider = {
     getDefaultConfig: function () {
       return {
@@ -18,8 +21,8 @@
           type: 'stack',
           content: [{
             type: 'component',
-            title: 'bash',
-            componentName: 'bash'
+            title: componentTitle,
+            componentName: componentName
           }]
         }]
       };
@@ -27,28 +30,28 @@
     getBlankPaneConfig: function () {
       return {
         type: 'component',
-        title: 'bash',
-        componentName: 'bash'
+        title: componentTitle,
+        componentName: componentName
       };
     },
     getColumnConfig: function () {
       return {
         type: 'column',
-        title: 'bash',
+        title: componentTitle,
         content:[]
       };
     },
     getRowConfig: function () {
       return {
         type: 'row',
-        title: 'bash',
+        title: componentTitle,
         content:[]
       };
     },
     getStackConfig: function () {
       return {
         type: 'stack',
-        title: 'bash',
+        title: componentTitle,
         content:[]
       };
     }
@@ -80,7 +83,7 @@
     var tty = this.tty;
     var self = this;
 
-    self.layout.registerComponent('bash', function(container, componentState){
+    self.layout.registerComponent(componentName, function(container, componentState){
       var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
       var terminal = new tty.Terminal(tty.socket, terminalOptions);
 
@@ -282,6 +285,9 @@
 
     self.layout.on('itemDropped', function () {
       self._removeRedundantStacks();
+
+      // sometime GL clears the title of a root row after drag&drop. Set it again
+      self._resetComponentTitle();
     });
   };
 
@@ -297,6 +303,19 @@
         var childItem = item.contentItems[0];
         item.contentItems = [];
         rootStack.replaceChild(item, childItem, true);
+      }
+    }
+  };
+
+  Layout.prototype._resetComponentTitle = function () {
+    var rootStack = this._getRootStack(),
+      i = 0;
+
+    for (i = 0; i < rootStack.contentItems.length; i++) {
+      var item = rootStack.contentItems[i];
+
+      if (item.config && !item.config.title) {
+        item.config.title = componentTitle;
       }
     }
   };
