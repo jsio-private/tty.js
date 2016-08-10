@@ -6,7 +6,7 @@
     , BaseTerminal = Terminal
     , on = BaseTerminal.on;
 
-  var _Terminal = function (socket, options) {
+  var _Terminal = function (socket, id) {
     var self = this;
 
     self.socket = socket;
@@ -16,9 +16,13 @@
 
     BaseTerminal.call(this, {nativeScroll: false});
 
-    self._restoreOptions(options);
+    if (id) {
+      self._restore(id);
+    }
     self.open();
     self.hookKeys();
+
+    tty.TerminalOptionsHandler.watch(this, _Terminal.stateFields);
   };
 
   BaseTerminal.inherits(_Terminal, BaseTerminal);
@@ -89,6 +93,14 @@
     this.id = data.id;
     this.setProcessName(data.process);
     this.emit('connect');
+  };
+
+  _Terminal.prototype._restore = function (id) {
+    var options = tty.TerminalOptionsHandler.get(id);
+
+    if (options) {
+      this._restoreOptions(options);
+    }
   };
 
   _Terminal.prototype._restoreOptions = function(options) {
@@ -261,18 +273,18 @@
     'id',
     'pty',
     'process',
-    //'lines',
-    //'children',
-    //'x',
-    //'y',
-    //'ydisp',
-    //'ybase',
-    //'scrollTop',
-    //'scrollBottom',
-    //'cols',
-    //'rows',
-    //'nativeScroll',
-    //'normal'
+    'lines',
+    'children',
+    'x',
+    'y',
+    'ydisp',
+    'ybase',
+    'scrollTop',
+    'scrollBottom',
+    'cols',
+    'rows',
+    'nativeScroll',
+    'normal'
   ];
 
   tty.Terminal = _Terminal;

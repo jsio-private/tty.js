@@ -68,7 +68,6 @@
 
     self.tty = tty;
     self.activeComponent = null;
-    self.terminalOptionsLimit = 10000;
   };
 
   Layout.prototype.watchStateChange = function () {
@@ -84,8 +83,7 @@
     var self = this;
 
     self.layout.registerComponent(componentName, function(container, componentState){
-      var terminalOptions = 'terminalOptions' in componentState ? componentState.terminalOptions : {};
-      var terminal = new tty.Terminal(tty.socket, terminalOptions);
+      var terminal = new tty.Terminal(tty.socket, componentState.termId);
 
       self._bindTerminalEvents(terminal, container);
       terminal.connect();
@@ -162,81 +160,15 @@
       self._removeRedundantStacks();
     });
 
-    //terminal.on('write', function () {
-    //  self._scheduleForSavingState(container, terminal);
-    //});
-    //
-    //terminal.on('resize', function () {
-    //  self._scheduleForSavingState(container, terminal);
-    //});
-
     terminal.on('process', function () {
       container.setTitle(terminal.process);
     });
   };
 
-  Layout.prototype._scheduleForSavingState = function (container, terminal) {
-    if (typeof container.schedulerCounter === 'undefined') {
-      container.schedulerCounter = 0;
-    }
-
-    container.schedulerCounter++;
-
-    // save state if there are no new schedules (activity) for more then 1 second
-    // or every 100th schedule
-    if (container.schedulerCounter > 100) {
-      container.schedulerCounter = 0;
-      self._saveContainerState(container, terminal);
-    } else {
-      var self = this;
-      var count = container.schedulerCounter;
-
-      setTimeout(function () {
-        if (container.schedulerCounter == count) {
-          self._saveContainerState(container, terminal);
-          container.schedulerCounter = 0;
-        }
-      }, 1000);
-    }
-  };
-
   Layout.prototype._saveContainerState = function (container, terminal) {
-    var options = {};
-
-    each(this.tty.Terminal.stateFields, function (key) {
-      if ($.isArray(terminal[key])) {
-        options[key] = $.extend(true, [], terminal[key]);
-      } else if (typeof terminal[key] == 'object' && terminal[key]) {
-        options[key] = $.extend(true, {}, terminal[key]);
-      } else {
-        options[key] = terminal[key];
-      }
-    });
-
     container.setState({
-      terminalOptions: this._limitStateOptions(options)
+      termId: terminal.id
     });
-  };
-
-  Layout.prototype._limitStateOptions = function (options) {
-    if (options['lines'] && options['lines'].length > this.terminalOptionsLimit) {
-      options['lines'] = options['lines'].splice(options['lines'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
-    }
-
-    if (options['children'] && options['children'].length > this.terminalOptionsLimit) {
-      options['children'] = options['children'].splice(options['children'].length - this.terminalOptionsLimit, this.terminalOptionsLimit);
-    }
-
-    if (options['rows'] && options['rows'] > this.terminalOptionsLimit) {
-      options['rows'] = this.terminalOptionsLimit;
-      options['scrollBottom'] = options['rows'] - 1;
-    }
-
-    if (options['y'] && options['y'] > this.terminalOptionsLimit) {
-      options['y'] = this.terminalOptionsLimit - 1;
-    }
-
-    return options;
   };
 
   /**
