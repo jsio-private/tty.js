@@ -17,6 +17,7 @@ var scripts = [
   'assets/js/helpers.js',
   'assets/js/tty.js',
   'assets/js/terminal-options-handler.js',
+  'assets/js/terminal-limit-handler.js',
   'assets/js/terminal.js',
   'assets/js/layout.js',
   'assets/js/shortcuts.js'

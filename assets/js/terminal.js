@@ -22,6 +22,7 @@
     self.open();
     self.hookKeys();
 
+    tty.TerminalLimitHandler.watch(this);
     tty.TerminalOptionsHandler.watch(this, _Terminal.stateFields);
   };
 
