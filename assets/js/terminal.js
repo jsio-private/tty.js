@@ -275,7 +275,6 @@
     'pty',
     'process',
     'lines',
-    'children',
     'x',
     'y',
     'ydisp',

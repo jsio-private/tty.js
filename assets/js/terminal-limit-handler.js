@@ -2,22 +2,22 @@
   var tty = this.tty;
 
   var TerminalLimitHandler = function () {
-    this.limit = 1000;
+    this.limit = 5000;
 
     // 'tolerance' is used to avoid cutting lines for every new line.
     // Lines will be cut if there are more lines than 'limit + tolerance' but will be cut to 'limit'
-    this.tolerance = 10;
+    this.tolerance = 50;
   };
 
   TerminalLimitHandler.prototype.watch = function (terminal) {
     var self = this;
 
     terminal.on('write', function () {
-      self._cutLines(terminal, self.limit, self.tolerance);
+      self.cutLines(terminal, self.limit, self.tolerance);
     });
   };
 
-  TerminalLimitHandler.prototype._cutLines = function (terminal, numberOfLines, tolerance) {
+  TerminalLimitHandler.prototype.cutLines = function (terminal, numberOfLines, tolerance) {
     var diff = terminal.lines.length - numberOfLines;
 
     if (diff > tolerance) {

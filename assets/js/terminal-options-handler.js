@@ -5,6 +5,8 @@
     this.socket = socket;
     this.terminalOptions = {};
     this.scheduleCounters = {};
+    this.linesLimit = 300;
+    this.saveAfter = 5000; // 5 sec
 
     this._restore();
   };
@@ -40,29 +42,27 @@
 
     this.scheduleCounters[terminal.id]++;
 
-    // save state if there are no new schedules (activity) for more then 1 second
-    // or every 100th schedule
-    if (this.scheduleCounters[terminal.id] > 100) {
-      this.scheduleCounters[terminal.id] = 0;
-      this._save(terminal, fields);
-    } else {
-      var self = this;
-      var count = this.scheduleCounters[terminal.id];
+    // save state if there are no new schedules (activity) for more then this.saveAfter/1000 second
+    var self = this;
+    var count = this.scheduleCounters[terminal.id];
 
-      setTimeout(function () {
-        if (self.scheduleCounters[terminal.id] == count) {
-          self._save(terminal, fields);
-          self.scheduleCounters[terminal.id] = 0;
-        }
-      }, 1000);
-    }
+    setTimeout(function () {
+      if (self.scheduleCounters[terminal.id] == count) {
+        self._save(terminal, fields);
+        self.scheduleCounters[terminal.id] = 0;
+      }
+    }, this.saveAfter);
   };
 
   TerminalOptionsHandler.prototype._save = function (terminal, fields) {
     var options = {};
 
+    // we will clone the terminal and cut the number of lines that will be saved
+    var cloned = $.extend(true, {}, terminal);
+    tty.TerminalLimitHandler.cutLines(cloned, this.linesLimit, 0);
+
     each(fields, function (key) {
-      options[key] = terminal[key];
+      options[key] = cloned[key];
     });
 
     this.persist(terminal.id, options);
