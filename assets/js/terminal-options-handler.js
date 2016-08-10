@@ -12,7 +12,7 @@
   TerminalOptionsHandler.prototype._restore = function () {
     var self = this;
 
-    self.socket.on('terminal options', function(terminalOptions) {
+    self.socket.on('sync', function(state, terminalOptions) {
       self.terminalOptions = terminalOptions;
     });
   };
