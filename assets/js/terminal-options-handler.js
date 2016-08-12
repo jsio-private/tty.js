@@ -1,13 +1,16 @@
 ;(function() {
   var tty = this.tty;
 
-  var TerminalOptionsHandler = function (socket) {
-    this.socket = socket;
+  var TerminalOptionsHandler = function () {
+    this.socket;
     this.terminalOptions = {};
     this.scheduleCounters = {};
     this.linesLimit = 300;
     this.saveAfter = 5000; // 5 sec
+  };
 
+  TerminalOptionsHandler.prototype.init = function (socket) {
+    this.socket = socket;
     this._restore();
   };
 
@@ -73,8 +76,10 @@
     this.socket.emit('terminal options save', id, options);
   };
 
+  tty.TerminalOptionsHandler = new TerminalOptionsHandler();
+
   tty.Controller.on('load', function () {
-    tty.TerminalOptionsHandler = new TerminalOptionsHandler(tty.Controller.socket);
+    tty.TerminalOptionsHandler.init(tty.Controller.socket);
   });
 
 }).call(function() {
