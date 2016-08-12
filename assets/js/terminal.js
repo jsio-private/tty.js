@@ -3,7 +3,8 @@
     , document = this.document
     , initialTitle = this.document.title
     , EventEmitter = this.tty.EventEmitter
-    , inherits = this.tty.inherits;
+    , inherits = this.tty.inherits
+    , TerminalOptionsHandler = this.tty.TerminalOptionsHandler;
 
   var _Terminal = function (socket, parent, id) {
     var self = this;
@@ -24,7 +25,7 @@
       self.term = self._createTerm();
     }
 
-    tty.TerminalOptionsHandler.watch(this, _Terminal.stateFields);
+    TerminalOptionsHandler.watch(this, _Terminal.stateFields);
   };
 
   inherits(_Terminal, EventEmitter);
@@ -125,7 +126,7 @@
   };
 
   _Terminal.prototype._restore = function (id) {
-    var options = tty.TerminalOptionsHandler.get(id);
+    var options = TerminalOptionsHandler.get(id);
 
     if (options) {
       this._restoreOptions(options);
