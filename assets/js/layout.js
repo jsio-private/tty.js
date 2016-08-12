@@ -86,7 +86,7 @@
         }
       });
       container.on('resize', function () {
-        if (container.terminal) {
+        if (container.terminal && !$('body').hasClass('lm_dragging')) {
           self.reattach(container);
         }
       });
