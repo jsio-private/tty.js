@@ -38,8 +38,7 @@
     "nunjucks": "0.1.9",
     "optimist": "~0.6.0",
     "pty.js": ">= 0.2.13",
-    "socket.io": "0.9.16",
-    "term.js": "git://github.com/jsio-private/term.js"
+    "socket.io": "0.9.16"
   },
   "engines": {
     "node": ">= 0.8.0"

@@ -74,7 +74,7 @@
     var self = this;
 
     this.layout.on('stateChanged', function(){
-      self.tty.socket.emit('layout state change', JSON.stringify(self.layout.toConfig()));
+      self.tty.Controller.socket.emit('layout state change', JSON.stringify(self.layout.toConfig()));
     });
   };
 
@@ -83,21 +83,17 @@
     var self = this;
 
     self.layout.registerComponent(componentName, function(container, componentState){
-      var terminal = new tty.Terminal(tty.socket, componentState.termId);
-
-      self._bindTerminalEvents(terminal, container);
-      terminal.connect();
-
-      container.getElement().get(0).appendChild(terminal.getElement());
-      container.terminal = terminal;
-
       container.on('show', function () {
         setTimeout(function () {
-          terminal.focus();
+          if (container.terminal) {
+            container.terminal.focus();
+          }
         }, 100);
       });
       container.on('resize', function () {
-        terminal.changeDimensions(container.width, container.height);
+        if (container.terminal && !$('body').hasClass('lm_dragging')) {
+          self.reattach(container);
+        }
       });
       container._element.on('click', function () {
         terminal.focus();
@@ -107,18 +103,50 @@
           container.dropControlProceeded = true;
           self._controlDrop(container);
         }
+
+        self._createTerminal(container, componentState);
       });
     });
+  };
+
+  Layout.prototype.reattach = function (container) {
+    if (typeof container.reattachCounter === 'undefined') {
+      container.reattachCounter = 0;
+    }
+
+    container.reattachCounter++;
+    var count = container.reattachCounter;
+
+    // reattach terminals if there are no new state changes for more then 50 ms
+    setTimeout(function () {
+      if (container.reattachCounter == count) {
+        container.terminal.attach();
+        container.reattachCounter = 0;
+      }
+    }, 50);
+  };
+
+  Layout.prototype._createTerminal = function (container, componentState) {
+    var self = this;
+    var tty = this.tty;
+
+    // leave time for initialisation
+    setTimeout(function () {
+      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), componentState.termId);
+
+      container.terminal = terminal;
+      self._bindTerminalEvents(terminal, container);
+      terminal.connect();
+    }, 50);
   };
 
   Layout.prototype._bindTerminalEvents = function (terminal, container) {
     var self = this;
 
     terminal.on('connect', function () {
-      self.tty.registerTerminal(terminal);
-      terminal.changeDimensions(container.width, container.height);
+      self.tty.Controller.registerTerminal(terminal);
+      self.tty.Controller.pullFromBuffer(terminal.id);
       self._saveContainerState(container, terminal);
-      self.tty.pullFromBuffer(terminal.id);
     });
 
     terminal.on('focus', function () {
@@ -142,9 +170,9 @@
     });
 
     terminal.on('destroy', function () {
-      self.tty.unregisterTerminal(terminal);
+      self.tty.Controller.unregisterTerminal(terminal);
 
-      if (!self.tty.hasTerminals()) {
+      if (!self.tty.Controller.hasTerminals()) {
         self.addNewTab();
       }
 
@@ -338,7 +366,7 @@
 
     $btn.on('click', function () {
       if (confirm("Are you sure want to refresh the session?")) {
-        self.tty.clearSession();
+        self.tty.Controller.clearSession();
       }
     });
   };
@@ -607,9 +635,13 @@
 
   var self = this;
 
-  self.tty.on('load', function () {
-    self.tty.socket.on('sync', function(state) {
-      self.tty.reset();
+  lib.init(function() {
+    hterm.defaultStorage = new lib.Storage.Local();
+  });
+
+  self.tty.Controller.on('load', function () {
+    self.tty.Controller.socket.on('sync', function(state) {
+      self.tty.Controller.reset();
       var layout = new Layout(state, self.tty);
       layout.init();
 

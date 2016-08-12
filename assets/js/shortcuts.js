@@ -1,6 +1,5 @@
 ;(function() {
   var tty = this.tty
-    , Terminal = this.tty.Terminal
     , Modal = this.Modal
     , cancel = this.tty.cancel
     , shortcutHelpModal;
@@ -17,16 +16,15 @@
                         </ul>\
                       </div>";
 
-  Terminal.prototype._keyDown = Terminal.prototype.keyDown;
-
-  Terminal.prototype.keyDown = function(ev) {
-    if (this.bindShortcuts(ev) === false) {
+  hterm.Keyboard.prototype.onKeyDownOriginal = hterm.Keyboard.prototype.onKeyDown_;
+  hterm.Keyboard.prototype.onKeyDown_ = function(ev) {
+    if (checkShortcuts(ev) === false) {
       return;
     }
-    return this._keyDown(ev);
+    return this.onKeyDownOriginal(ev);
   };
 
-  Terminal.prototype.bindShortcuts = function (ev) {
+  var checkShortcuts = function (ev) {
     if (ev.altKey && ev.shiftKey) {
       switch (ev.keyCode) {
         case 9: // tab

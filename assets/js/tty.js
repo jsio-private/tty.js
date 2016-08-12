@@ -12,38 +12,38 @@
   var query_params = getQueryParams(location.search)
     , document = this.document
     , window = this
-    , EventEmitter = Terminal.EventEmitter
-    , on = Terminal.on
-    , off = Terminal.off
-    , cancel = Terminal.cancel;
+    , EventEmitter = this.tty.EventEmitter
+    , on = this.tty.on
+    , off = this.tty.off
+    , cancel = this.tty.cancel;
 
   /**
-   * tty
+   * Controller
    */
 
-  var tty = new EventEmitter;
+  var Controller = new EventEmitter;
 
   /**
    * Shared
    */
 
-  tty.socket;
-  tty.terms = {};
-  tty.buffer = {};
+  Controller.socket;
+  Controller.terms = {};
+  Controller.buffer = {};
 
   /**
    * Open
    */
-  tty.open = function() {
-    tty.openSocket();
-    tty.handleSocketEvents();
-    tty.setProcessNames();
+  Controller.open = function() {
+    Controller.openSocket();
+    Controller.handleSocketEvents();
+    Controller.setProcessNames();
 
-    tty.emit('load');
-    tty.emit('open');
+    Controller.emit('load');
+    Controller.emit('open');
   };
 
-  tty.openSocket = function () {
+  Controller.openSocket = function () {
     if (document.location.pathname) {
       var base = document.location.pathname;
       if (base[0] == "/"){
@@ -64,53 +64,53 @@
       if (query_params.script){
         queries.push("script=" + query_params.script);
       }
-      queries.push("sessionId=" + tty.getSessionId());
-      queries.push("userAgentId=" + tty.getUserAgentId());
+      queries.push("sessionId=" + Controller.getSessionId());
+      queries.push("userAgentId=" + Controller.getUserAgentId());
 
       var query = queries.join("&");
-      tty.socket = io.connect(null, {resource : resource,
+      Controller.socket = io.connect(null, {resource : resource,
         query : query
       });
     } else {
-      tty.socket = io.connect();
+      Controller.socket = io.connect();
     }
   };
 
-  tty.handleSocketEvents = function () {
-    tty.socket.on('session', function(data) {
-      tty.socket.sessionInitialized = true;
-      tty.saveSessionId(data.sessionId);
+  Controller.handleSocketEvents = function () {
+    Controller.socket.on('session', function(data) {
+      Controller.socket.sessionInitialized = true;
+      Controller.saveSessionId(data.sessionId);
     });
 
-    tty.socket.on('connect', function() {
-      tty.reset();
-      tty.emit('connect');
+    Controller.socket.on('connect', function() {
+      Controller.reset();
+      Controller.emit('connect');
     });
 
-    tty.socket.on('data', function(id, data) {
-      if (!tty.terms[id]) {
-        tty.saveToBuffer(id, data);
+    Controller.socket.on('data', function(id, data) {
+      if (!Controller.terms[id]) {
+        Controller.saveToBuffer(id, data);
         return;
       }
-      tty.terms[id].write(data);
+      Controller.terms[id].write(data);
     });
 
-    tty.socket.on('kill', function(id) {
-      if (!tty.terms[id]) return;
-      tty.terms[id].destroy();
+    Controller.socket.on('kill', function(id) {
+      if (!Controller.terms[id]) return;
+      Controller.terms[id].destroy();
     });
   };
 
-  tty.setProcessNames = function () {
+  Controller.setProcessNames = function () {
     // We would need to poll the os on the serverside
     // anyway. there's really no clean way to do this.
     // This is just easier to do on the
     // clientside, rather than poll on the
     // server, and *then* send it to the client.
     setInterval(function() {
-      var i = tty.terms.length;
+      var i = Controller.terms.length;
       while (i--) {
-        tty.terms[i].pollProcessName();
+        Controller.terms[i].pollProcessName();
       }
     }, 2 * 1000);
   };
@@ -119,46 +119,46 @@
    * Reset
    */
 
-  tty.reset = function() {
-    var i = tty.terms.length;
+  Controller.reset = function() {
+    var i = Controller.terms.length;
     while (i--) {
-      tty.terms[i].destroy();
+      Controller.terms[i].destroy();
     }
 
-    tty.terms = {};
-    tty.emit('reset');
+    Controller.terms = {};
+    Controller.emit('reset');
   };
 
 
-  tty.registerTerminal = function (term) {
-    tty.terms[term.id] = term;
+  Controller.registerTerminal = function (term) {
+    Controller.terms[term.id] = term;
   };
 
-  tty.unregisterTerminal = function (term) {
-    if (tty.terms[term.id]) {
-      delete tty.terms[term.id];
+  Controller.unregisterTerminal = function (term) {
+    if (Controller.terms[term.id]) {
+      delete Controller.terms[term.id];
     }
   };
 
-  tty.hasTerminals = function () {
-    return !$.isEmptyObject(tty.terms);
+  Controller.hasTerminals = function () {
+    return !$.isEmptyObject(Controller.terms);
   };
 
-  tty.getSessionId = function () {
+  Controller.getSessionId = function () {
     if (typeof(Storage) !== "undefined" && sessionStorage.sessionId) {
       return sessionStorage.sessionId;
     }
     return null;
   };
 
-  tty.saveSessionId = function (id) {
+  Controller.saveSessionId = function (id) {
     if (typeof(Storage) !== "undefined") {
       sessionStorage.sessionId = id;
     }
   };
 
-  tty.clearSession = function () {
-    tty.socket.emit('destroy session');
+  Controller.clearSession = function () {
+    Controller.socket.emit('destroy session');
 
     if (typeof(Storage) !== "undefined" && sessionStorage.sessionId) {
       delete sessionStorage.sessionId;
@@ -167,7 +167,7 @@
     location.reload();
   };
 
-  tty.getUserAgentId = function () {
+  Controller.getUserAgentId = function () {
     if (typeof(Storage) === "undefined") {
       return null;
     }
@@ -180,18 +180,18 @@
     return id;
   };
 
-  tty.saveToBuffer = function (id, data) {
-    if (typeof tty.buffer[id] == 'undefined') {
-      tty.buffer[id] = [];
+  Controller.saveToBuffer = function (id, data) {
+    if (typeof Controller.buffer[id] == 'undefined') {
+      Controller.buffer[id] = [];
     }
-    tty.buffer[id].push(data);
+    Controller.buffer[id].push(data);
   };
 
-  tty.pullFromBuffer = function (id) {
-    if (!tty.terms[id] || !tty.buffer[id]) return;
+  Controller.pullFromBuffer = function (id) {
+    if (!Controller.terms[id] || !Controller.buffer[id]) return;
 
-    var buffer = tty.buffer[id];
-    var term = tty.terms[id];
+    var buffer = Controller.buffer[id];
+    var term = Controller.terms[id];
 
     while (buffer.length) {
       var data = buffer.shift();
@@ -209,12 +209,12 @@
     if (query_params.script){
       window.onbeforeunload = function(){
         console.log('RESET');
-        tty.reset();
+        Controller.reset();
       }
     }
     off(document, 'load', load);
     off(document, 'DOMContentLoaded', load);
-    tty.open();
+    Controller.open();
   }
 
   on(document, 'load', load);
@@ -225,8 +225,7 @@
    * Expose
    */
 
-  tty.cancel = cancel;
-  this.tty = tty;
+  this.tty.Controller = Controller;
 
 }).call(function() {
     return this || (typeof window !== 'undefined' ? window : global);

@@ -73,8 +73,8 @@
     this.socket.emit('terminal options save', id, options);
   };
 
-  tty.on('load', function () {
-    tty.TerminalOptionsHandler = new TerminalOptionsHandler(tty.socket);
+  tty.Controller.on('load', function () {
+    tty.TerminalOptionsHandler = new TerminalOptionsHandler(tty.Controller.socket);
   });
 
 }).call(function() {
