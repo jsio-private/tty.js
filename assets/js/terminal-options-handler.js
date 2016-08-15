@@ -61,11 +61,11 @@
     var options = {};
 
     // we will clone the terminal and cut the number of lines that will be saved
-    var cloned = $.extend(true, {}, terminal);
-    tty.TerminalLimitHandler.cutLines(cloned, this.linesLimit, 0);
+    // var cloned = $.extend(true, {}, terminal);
+    // tty.TerminalLimitHandler.cutLines(cloned, this.linesLimit, 0);
 
     each(fields, function (key) {
-      options[key] = cloned[key];
+      options[key] = terminal[key];
     });
 
     this.persist(terminal.id, options);
