@@ -83,7 +83,7 @@
     var self = this;
 
     self.layout.registerComponent(componentName, function(container, componentState){
-      var terminal = new tty.Terminal(tty.socket, componentState.termId);
+      var terminal = new tty.Terminal(tty.socket, componentState.termId, componentState.process);
 
       self._bindTerminalEvents(terminal, container);
       terminal.connect();
@@ -167,7 +167,8 @@
 
   Layout.prototype._saveContainerState = function (container, terminal) {
     container.setState({
-      termId: terminal.id
+      termId: terminal.id,
+      process: terminal.process
     });
   };
 

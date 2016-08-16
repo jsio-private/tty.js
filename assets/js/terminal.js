@@ -6,7 +6,7 @@
     , BaseTerminal = Terminal
     , on = BaseTerminal.on;
 
-  var _Terminal = function (socket, id) {
+  var _Terminal = function (socket, id, process) {
     var self = this;
 
     self.socket = socket;
@@ -19,31 +19,18 @@
     if (id) {
       self._restore(id);
     }
+    if (process) {
+      self.setProcessName(process);
+    }
+
     self.open();
     self.hookKeys();
-
-    tty.TerminalLimitHandler.watch(this);
-    tty.TerminalOptionsHandler.watch(this, _Terminal.stateFields);
   };
 
   BaseTerminal.inherits(_Terminal, BaseTerminal);
 
   _Terminal.prototype.handler = function(data) {
     this.socket.emit('data', this.id, data);
-  };
-
-  _Terminal.prototype.touch = function() {
-    var self = this;
-
-    if (self.socket.sessionInitialized) {
-      setTimeout(function () {
-        self.handler(" \b");
-      }, 100);
-    } else {
-      self.socket.on('session', function () {
-        self.handler(" \b");
-      });
-    }
   };
 
   _Terminal.prototype._write = _Terminal.prototype.write;
@@ -73,13 +60,7 @@
 
     if (this.id) {
       this.emit('connect');
-
-      if (this.normal) {
-        this.reset();
-        this.showCursor();
-      }
-
-      this.touch();
+      this._restoreHistory();
       this.scroll();
     } else {
       self.socket.emit('create', self.cols, self.rows, function(err, data) {
@@ -97,25 +78,17 @@
   };
 
   _Terminal.prototype._restore = function (id) {
-    var options = tty.TerminalOptionsHandler.get(id);
-
-    if (options) {
-      this._restoreOptions(options);
-    }
+    this.id = id;
+    this.pty = id;
   };
 
-  _Terminal.prototype._restoreOptions = function(options) {
-    if (options) {
-      var self = this;
+  _Terminal.prototype._restoreHistory = function() {
+    var history = tty.TerminalHistoryHandler.get(this.id);
+    var self = this;
 
-      each(keys(options), function (key) {
-        if (_Terminal.stateFields.indexOf(key) > -1) {
-          if (key == 'process') {
-            self.setProcessName(options[key]);
-          } else {
-            self[key] = options[key];
-          }
-        }
+    if (history) {
+      each(history, function (data) {
+        self._write(data);
       });
     }
   };
@@ -235,15 +208,6 @@
     });
   };
 
-  _Terminal.prototype.pollProcessName = function(func) {
-    var self = this;
-    this.socket.emit('process', this.id, function(err, name) {
-      if (err) return func && func(err);
-      self.setProcessName(name);
-      return func && func(null, name);
-    });
-  };
-
   _Terminal.prototype.setProcessName = function(name) {
     name = sanitize(name);
 
@@ -269,23 +233,6 @@
       wrapElement.scrollTop = wrapElement.scrollHeight;
     }, 100);
   };
-
-  _Terminal.stateFields = [
-    'id',
-    'pty',
-    'process',
-    'lines',
-    'x',
-    'y',
-    'ydisp',
-    'ybase',
-    'scrollTop',
-    'scrollBottom',
-    'cols',
-    'rows',
-    'nativeScroll',
-    'normal'
-  ];
 
   tty.Terminal = _Terminal;
 

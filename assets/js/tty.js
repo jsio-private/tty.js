@@ -37,7 +37,6 @@
   tty.open = function() {
     tty.openSocket();
     tty.handleSocketEvents();
-    tty.setProcessNames();
 
     tty.emit('load');
     tty.emit('open');
@@ -99,20 +98,6 @@
       if (!tty.terms[id]) return;
       tty.terms[id].destroy();
     });
-  };
-
-  tty.setProcessNames = function () {
-    // We would need to poll the os on the serverside
-    // anyway. there's really no clean way to do this.
-    // This is just easier to do on the
-    // clientside, rather than poll on the
-    // server, and *then* send it to the client.
-    setInterval(function() {
-      var i = tty.terms.length;
-      while (i--) {
-        tty.terms[i].pollProcessName();
-      }
-    }, 2 * 1000);
   };
 
   /**
