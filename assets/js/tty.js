@@ -37,7 +37,6 @@
   Controller.open = function() {
     Controller.openSocket();
     Controller.handleSocketEvents();
-    Controller.setProcessNames();
 
     Controller.emit('load');
     Controller.emit('open');
@@ -99,20 +98,6 @@
       if (!Controller.terms[id]) return;
       Controller.terms[id].destroy();
     });
-  };
-
-  Controller.setProcessNames = function () {
-    // We would need to poll the os on the serverside
-    // anyway. there's really no clean way to do this.
-    // This is just easier to do on the
-    // clientside, rather than poll on the
-    // server, and *then* send it to the client.
-    setInterval(function() {
-      var i = Controller.terms.length;
-      while (i--) {
-        Controller.terms[i].pollProcessName();
-      }
-    }, 2 * 1000);
   };
 
   /**

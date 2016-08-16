@@ -132,7 +132,7 @@
 
     // leave time for initialisation
     setTimeout(function () {
-      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), componentState.termId);
+      var terminal = new tty.Terminal(tty.Controller.socket, container.getElement().get(0), componentState.termId, componentState.process);
 
       container.terminal = terminal;
       self._bindTerminalEvents(terminal, container);
@@ -195,7 +195,8 @@
 
   Layout.prototype._saveContainerState = function (container, terminal) {
     container.setState({
-      termId: terminal.id
+      termId: terminal.id,
+      process: terminal.process
     });
   };
 

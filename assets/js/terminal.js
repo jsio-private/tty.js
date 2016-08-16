@@ -1,12 +1,12 @@
 ;(function() {
   var window = this
+    , tty = this.tty
     , document = this.document
     , initialTitle = this.document.title
     , EventEmitter = this.tty.EventEmitter
-    , inherits = this.tty.inherits
-    , TerminalOptionsHandler = this.tty.TerminalOptionsHandler;
+    , inherits = this.tty.inherits;
 
-  var _Terminal = function (socket, parent, id) {
+  var _Terminal = function (socket, parent, id, process) {
     var self = this;
 
     EventEmitter.call(this);
@@ -21,11 +21,13 @@
       self._restore(id);
     }
 
+    if (process) {
+      self.setProcessName(process);
+    }
+
     if (!self.term) {
       self.term = self._createTerm();
     }
-
-    TerminalOptionsHandler.watch(this, _Terminal.stateFields);
   };
 
   inherits(_Terminal, EventEmitter);
@@ -105,6 +107,7 @@
 
     if (this.id) {
       this.emit('connect');
+      this._restoreHistory();
     } else {
       self.socket.emit('create', self.term.io.columnCount, self.term.io.rowCount, function(err, data) {
         if (err) return self.destroy();
@@ -126,25 +129,17 @@
   };
 
   _Terminal.prototype._restore = function (id) {
-    var options = TerminalOptionsHandler.get(id);
-
-    if (options) {
-      this._restoreOptions(options);
-    }
+    this.id = id;
+    this.pty = id;
   };
 
-  _Terminal.prototype._restoreOptions = function(options) {
-    if (options) {
-      var self = this;
+  _Terminal.prototype._restoreHistory = function() {
+    var history = tty.TerminalHistoryHandler.get(this.id);
+    var self = this;
 
-      each(keys(options), function (key) {
-        if (_Terminal.stateFields.indexOf(key) > -1) {
-          if (key == 'process') {
-            self.setProcessName(options[key]);
-          } else {
-            self[key] = options[key];
-          }
-        }
+    if (history) {
+      each(history, function (data) {
+        self.write(data);
       });
     }
   };
@@ -185,15 +180,6 @@
     document.title = this.title || initialTitle;
   };
 
-  _Terminal.prototype.pollProcessName = function(func) {
-    var self = this;
-    this.socket.emit('process', this.id, function(err, name) {
-      if (err) return func && func(err);
-      self.setProcessName(name);
-      return func && func(null, name);
-    });
-  };
-
   _Terminal.prototype.setProcessName = function(name) {
     name = sanitize(name);
 
@@ -206,12 +192,6 @@
       this.emit('process', name);
     }
   };
-
-  _Terminal.stateFields = [
-    'id',
-    'pty',
-    'process'
-  ];
 
   this.tty.Terminal = _Terminal;
 
