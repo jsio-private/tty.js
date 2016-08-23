@@ -96,7 +96,9 @@
         }
       });
       container._element.on('click', function () {
-        terminal.focus();
+        if (container.terminal) {
+          container.terminal.focus();
+        }
       });
       container.on('open', function () {
         if (!container.dropControlProceeded) {
