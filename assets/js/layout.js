@@ -265,6 +265,11 @@
       if (item.contentItems.length == 1 && !item.isComponent) {
         var childItem = item.contentItems[0];
         item.contentItems = [];
+
+        if (!item.element.is(":visible")) {
+          childItem.element.hide();
+        }
+
         rootStack.replaceChild(item, childItem, true);
       }
     }
