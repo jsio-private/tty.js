@@ -216,7 +216,11 @@
       var originalGetArea = stack._$getArea;
       stack._$getArea = function () {
         var area = originalGetArea.call(stack);
-        delete stack._contentAreaDimensions.header;
+
+        if (stack._contentAreaDimensions) {
+          delete stack._contentAreaDimensions.header;
+        }
+
         return area;
       };
     } else if (stack.parent.isRoot) {
@@ -224,10 +228,14 @@
       var originalGetArea = stack._$getArea;
       stack._$getArea = function () {
         var area = originalGetArea.call(stack);
-        delete stack._contentAreaDimensions.left;
-        delete stack._contentAreaDimensions.right;
-        delete stack._contentAreaDimensions.top;
-        delete stack._contentAreaDimensions.bottom;
+
+        if (stack._contentAreaDimensions) {
+          delete stack._contentAreaDimensions.left;
+          delete stack._contentAreaDimensions.right;
+          delete stack._contentAreaDimensions.top;
+          delete stack._contentAreaDimensions.bottom;
+        }
+
         return area;
       };
 
