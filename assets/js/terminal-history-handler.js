@@ -20,6 +20,14 @@
     return this.history[id] ? this.history[id] : null;
   };
 
+  TerminalHistoryHandler.prototype.push = function (id, data) {
+    if (!this.history[id]) {
+      this.history[id] = [];
+    }
+
+    this.history[id].push(data);
+  };
+
   tty.Controller.on('load', function () {
     tty.TerminalHistoryHandler = new TerminalHistoryHandler(tty.Controller.socket);
   });

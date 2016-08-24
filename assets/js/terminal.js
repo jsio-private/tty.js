@@ -92,9 +92,13 @@
     this.socket.emit('data', this.id, data);
   };
 
-  _Terminal.prototype.write = function(data) {
+  _Terminal.prototype.write = function(data, skipHistory) {
     this.term.io.writeUTF16(data);
     this.emit('write');
+
+    if (!skipHistory) {
+      tty.TerminalHistoryHandler.push(this.id, data);
+    }
   };
 
   _Terminal.prototype.connect = function() {
@@ -139,7 +143,7 @@
 
     if (history) {
       each(history, function (data) {
-        self.write(data);
+        self.write(data, true);
       });
     }
   };
