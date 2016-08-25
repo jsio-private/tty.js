@@ -28,6 +28,8 @@
     if (!self.term) {
       self.term = self._createTerm();
     }
+
+    self._handleResize();
   };
 
   inherits(_Terminal, EventEmitter);
@@ -47,6 +49,7 @@
     term.prefs_.set('pass-ctrl-number', true);
     term.prefs_.set('pass-meta-number', true);
     term.prefs_.set('audible-bell-sound', '');
+    term.prefs_.set('scrollbar-visible', true);
     term.prefs_.set('keybindings', {
       "Ctrl-F" : "PASS",
       "Ctrl-R" : "PASS",
@@ -198,6 +201,20 @@
       this.process = name;
       this.emit('process', name);
     }
+  };
+
+  _Terminal.prototype._handleResize = function () {
+    var self = this;
+    var scrollPort = self.term.scrollPort_;
+
+    // resize the terminal when scroll appear
+    self.on('write', function () {
+      if (!self.scrollShown &&
+        scrollPort.screen_.scrollHeight > scrollPort.screen_.clientHeight) {
+        self.scrollShown = true;
+        scrollPort.resize();
+      }
+    });
   };
 
   this.tty.Terminal = _Terminal;
