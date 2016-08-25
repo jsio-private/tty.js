@@ -55,7 +55,7 @@
       "Meta-F" : "PASS",
       "Meta-R" : "PASS",
       "Meta-S" : "PASS",
-      "Meta-A" : "PASS",
+      "Meta-A" : "PASS"
     });
 
     term.onFocusChangeOriginal_ = term.onFocusChange_;
@@ -82,6 +82,7 @@
 
       io.onTerminalResize = function(columns, rows) {
         self.resize(columns, rows);
+        self._restoreHistory();
       };
     };
 
@@ -111,7 +112,6 @@
 
     if (this.id) {
       this.emit('connect');
-      this._restoreHistory();
     } else {
       self.socket.emit('create', self.term.io.columnCount, self.term.io.rowCount, function(err, data) {
         if (err) return self.destroy();
@@ -138,6 +138,9 @@
   };
 
   _Terminal.prototype._restoreHistory = function() {
+    if (this.historyRestored) return;
+    this.historyRestored = true;
+
     var history = tty.TerminalHistoryHandler.get(this.id);
     var self = this;
 
